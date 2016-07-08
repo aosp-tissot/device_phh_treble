@@ -15,6 +15,12 @@ $(call inherit-product, vendor/hardware_overlay/overlay.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
+# Glove mode
+PRODUCT_PACKAGES += \
+    DeviceSettings
+
+
+
 #Those overrides are here because Huawei's init read properties
 #from /system/etc/prop.default, then /vendor/build.prop, then /system/build.prop
 #So we need to set our props in prop.default
