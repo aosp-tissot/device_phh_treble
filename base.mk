@@ -27,6 +27,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 PRODUCT_COPY_FILES += \
         $(call find-copy-subdir-files,*,device/phh/treble/ims,system/phh/ims)
 
+# Glove mode
+PRODUCT_PACKAGES += \
+    DeviceSettings
+
 #Those overrides are here because Huawei's init read properties
 #from /system/etc/prop.default, then /vendor/build.prop, then /system/build.prop
 #So we need to set our props in prop.default
