@@ -1,0 +1,20 @@
+[
+  {
+    "repository": "phhusson/vendor_hardware_overlay",
+    "target_path": "vendor/hardware_overlay",
+    "branch": "master",
+    "remote": "github"
+  },
+  {
+    "repository": "phhusson/vendor_vndk",
+    "target_path": "vendor/vndk",
+    "branch": "master",
+    "remote": "github"
+  },
+  {
+    "repository": "phhusson/vendor_vndk-tests",
+    "target_path": "vendor/vndk-tests",
+    "branch": "master",
+    "remote": "github"
+  }
+]
