@@ -215,3 +215,12 @@ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" 
 fi
 
 mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
+
+if ! grep android.hardware.ir /vendor/manifest.xml;then
+    mount -o bind system/phh/empty /system/etc/permissions/android.hardware.consumerir.xml
+fi
+
+#Disable trustkernel keystore, because it doesn't work for the moment
+#Found on MTK devices
+mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
+mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
