@@ -9,4 +9,4 @@ $(call inherit-product, device/phh/treble/aosp.mk)
 PRODUCT_NAME := aosp_arm64_ab
 PRODUCT_DEVICE := phhgsi_arm64_ab
 PRODUCT_BRAND := Android
-PRODUCT_MODEL := PixelExperience for Phh-Treble
+PRODUCT_MODEL := Phh-Treble (ARM64 - A/B)
