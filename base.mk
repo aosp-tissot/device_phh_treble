@@ -62,3 +62,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGRES += \
 	bootctl
+
+# Camera
+PRODUCT_PACKAGES += \
+    Snap
