@@ -115,3 +115,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/files/adbd.rc:system/etc/init/adbd.rc
+
+# Camera
+PRODUCT_PACKAGES += \
+    Snap
