@@ -4,9 +4,9 @@ PRODUCT_COPY_FILES := \
 	frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
 	frameworks/native/data/etc/android.hardware.consumerir.xml:system/etc/permissions/android.hardware.consumerir.xml
 
-#Use a more decent APN config
-#PRODUCT_COPY_FILES += \
-#	device/sample/etc/apns-full-conf.xml:system/etc/apns-conf.xml
+# Use a more decent APN config
+PRODUCT_COPY_FILES += \
+	device/sample/etc/apns-full-conf.xml:system/etc/apns-conf.xml
 
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += device/phh/treble/sepolicy
 DEVICE_PACKAGE_OVERLAYS += device/phh/treble/overlay
@@ -118,4 +118,9 @@ PRODUCT_COPY_FILES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-    Snap
+        Snap
+
+# exFAT tools
+PRODUCT_PACKAGES += \
+    fsck.exfat \
+    mkfs.exfat
