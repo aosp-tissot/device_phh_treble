@@ -60,7 +60,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
 	treble-environ-rc
 
-PRODUCT_PACKAGRES += \
+PRODUCT_PACKAGES += \
 	bootctl \
 	vintf
 
