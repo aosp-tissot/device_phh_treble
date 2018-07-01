@@ -11,6 +11,8 @@ PRODUCT_DEVICE := phhgsi_arm_a
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := Phh-Treble (ARM - A)
 
+GAPPS_VARIANT := pico
+
 # AOSP Packages
 PRODUCT_PACKAGES += \
     Launcher3 \

@@ -11,6 +11,8 @@ PRODUCT_DEVICE := phhgsi_arm64_ab
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := Phh-Treble (ARM64 - A/B)
 
+GAPPS_VARIANT := mini
+
 # AOSP Packages
 PRODUCT_PACKAGES += \
     Launcher3 \
