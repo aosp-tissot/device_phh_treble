@@ -121,9 +121,9 @@ PRODUCT_PACKAGES += \
         Snap
 
 # exFAT tools
-#PRODUCT_PACKAGES += \
-#    fsck.exfat \
-#    mkfs.exfat
+PRODUCT_PACKAGES += \
+    fsck.exfat \
+    mkfs.exfat
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/twrp/twrp.rc:system/etc/init/twrp.rc \
