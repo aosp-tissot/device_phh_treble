@@ -136,4 +136,5 @@ PRODUCT_PACKAGES += \
 	vendor.qti.hardware.radio.am-V1.0-java \
 	vendor.qti.qcril.am-V1.0-java \
 
-
+PRODUCT_COPY_FILES += \
+	device/phh/treble/interfaces.xml:system/etc/permissions/interfaces.xml
