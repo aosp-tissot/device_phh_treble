@@ -1,0 +1,8 @@
+--- device/phh/treble/base.mk
++++ device/phh/treble/base.mk
+@@ -100,3 +100,5 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/files/samsung-gpio_keys.kl:system/phh/samsung-gpio_keys.kl \
+ 	device/phh/treble/files/samsung-sec_touchscreen.kl:system/phh/samsung-sec_touchscreen.kl \
+ 	device/phh/treble/files/oneplus6-synaptics_s3320.kl:system/phh/oneplus6-synaptics_s3320.kl \
++
++SELINUX_IGNORE_NEVERALLOWS := true
