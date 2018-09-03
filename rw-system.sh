@@ -41,6 +41,31 @@ fixSPL() {
     fi
 }
 
+changeKeylayout() {
+    cp -a /system/usr/keylayout /mnt/phh/keylayout
+    changed=false
+
+    if getprop ro.vendor.build.fingerprint | \
+        grep -qE -e ".*(crown|star)[q2]*lte.*"  -e ".*(SC-0[23]K|SCV3[89]).*";then
+        changed=true
+
+        cp /system/phh/samsung-gpio_keys.kl /mnt/phh/keylayout/gpio_keys.kl
+        cp /system/phh/samsung-sec_touchscreen.kl /mnt/phh/keylayout/sec_touchscreen.kl
+        chmod 0644 /mnt/phh/keylayout/gpio_keys.kl /mnt/phh/keylayout/sec_touchscreen.kl
+    fi
+
+    if getprop ro.vendor.build.fingerprint |grep -q Xiaomi/polaris;then
+        cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
+        chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
+        changed=true
+    fi
+
+    if [ "$changed" == true ];then
+        mount -o bind /mnt/phh/keylayout /system/usr/keylayout
+        restorecon -R /system/usr/keylayout
+    fi
+}
+
 if mount -o remount,rw /system;then
 	resize2fs $(grep ' /system ' /proc/mounts |cut -d ' ' -f 1) || true
 elif mount -o remount,rw /;then
