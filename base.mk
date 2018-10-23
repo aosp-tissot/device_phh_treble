@@ -118,7 +118,7 @@ PRODUCT_COPY_FILES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-        Snap
+        SnapdragonCamera
 
 # exFAT tools
 PRODUCT_PACKAGES += \
