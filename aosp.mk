@@ -21,4 +21,5 @@ PRODUCT_PACKAGES += \
        LatinImeGoogle \
        phh-overrides
 
-$(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
+# $(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
+$(call inherit-product,  vendor/gapps/config.mk)
