@@ -74,7 +74,7 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-        Snap
+        SnapdragonCamera
 
 # exFAT tools
 PRODUCT_PACKAGES += \
