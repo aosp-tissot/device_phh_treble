@@ -1,8 +1,7 @@
 #Huawei devices don't declare fingerprint and telephony hardware feature
 PRODUCT_COPY_FILES := \
 	frameworks/native/data/etc/android.hardware.fingerprint.xml:system/etc/permissions/android.hardware.fingerprint.xml \
-	frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
-	frameworks/native/data/etc/android.hardware.consumerir.xml:system/etc/permissions/android.hardware.consumerir.xml
+	frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml
 
 # Use a more decent APN config
 PRODUCT_COPY_FILES += \
@@ -119,28 +118,3 @@ PRODUCT_COPY_FILES += \
 # Camera
 PRODUCT_PACKAGES += \
         SnapdragonCamera
-
-# exFAT tools
-PRODUCT_PACKAGES += \
-    fsck.exfat \
-    mkfs.exfat
-
-PRODUCT_COPY_FILES += \
-	device/phh/treble/twrp/twrp.rc:system/etc/init/twrp.rc \
-	device/phh/treble/twrp/twrp.sh:system/bin/twrp.sh \
-	device/phh/treble/twrp/busybox-armv7l:system/bin/busybox_phh
-
-PRODUCT_PACKAGES += \
-	android.hardware.wifi.hostapd-V1.0-java \
-	vendor.huawei.hardware.biometrics.fingerprint-V2.1-java \
-	vendor.huawei.hardware.tp-V1.0-java \
-	vendor.qti.hardware.radio.am-V1.0-java \
-	vendor.qti.qcril.am-V1.0-java \
-
-PRODUCT_COPY_FILES += \
-	device/phh/treble/interfaces.xml:system/etc/permissions/interfaces.xml
-
-PRODUCT_COPY_FILES += \
-	device/phh/treble/files/samsung-gpio_keys.kl:system/phh/samsung-gpio_keys.kl \
-	device/phh/treble/files/samsung-sec_touchscreen.kl:system/phh/samsung-sec_touchscreen.kl \
-	device/phh/treble/files/oneplus6-synaptics_s3320.kl:system/phh/oneplus6-synaptics_s3320.kl \
