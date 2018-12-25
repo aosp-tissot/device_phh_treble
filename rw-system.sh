@@ -254,3 +254,31 @@ fi
 #Found on MTK devices
 mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
 mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
+
+fingerprint=getprop ro.vendor.build.fingerprint
+setprop ro.build.fingerprint $fingerprint
+setprop bootimage.build.fingerprint $fingerprint
+
+# Get the device vendor fingerprint and set it in prop files, then restart once
+fp_prop="$(getprop ro.vendor.build.fingerprint)"
+fp_dn="$(getprop ro.vendor.product.device)"
+fp_name="$(getprop ro.vendor.product.name)"
+br_name="$(getprop ro.vendor.product.brand)"
+mo_name="$(getprop ro.vendor.product.model)"
+mount -o remount,rw /system
+sed -i  "s|ro.bootimage.build.fingerprint=.*|ro.bootimage.build.fingerprint=$fp_prop|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.build.fingerprint=.*|ro.build.fingerprint=$fp_prop|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.build.device=.*|ro.build.device=$fp_dn|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.product.name=.*|ro.product.name=$fp_name|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.product.brand=.*|ro.product.brand=$br_name|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.product.model=.*|ro.product.model=$mo_name|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.product.device=.*|ro.product.device=$fp_dn|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.build.product=.*|ro.build.product=$fp_dn|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.product.manufacturer=.*|ro.product.manufacturer=$br_name|g" /system/build.prop /system/etc/prop.default
+sed -i  "s|ro.build.tags.*|ro.build.tags=release-keys|g" /system/build.prop /system/etc/prop.default
+mount -o remount,ro /system || true
+mount -o remount,ro / || true
+system_prop="$(getprop ro.build.fingerprint)"
+if [ $system_prop != $fp_prop ];then
+	reboot
+fi
