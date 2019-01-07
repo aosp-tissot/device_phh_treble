@@ -254,3 +254,21 @@ fi
 #Found on MTK devices
 mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
 mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
+
+# Get the device vendor fingerprint and set it in prop files, then restart once
+fp_prop="$(getprop ro.vendor.build.fingerprint)"
+fp_dn="$(getprop ro.vendor.product.device)"
+fp_name="$(getprop ro.vendor.product.name)"
+br_name="$(getprop ro.vendor.product.brand)"
+mo_name="$(getprop ro.vendor.product.model)"
+system_prop="$(getprop ro.build.fingerprint)"
+setprop ro.bootimage.build.fingerprint $fp_prop
+setprop ro.build.fingerprint $fp_prop
+setprop ro.build.device $fp_dn
+setprop ro.product.name $fp_name
+setprop ro.product.brand $br_name
+setprop ro.product.model $mo_name
+setprop ro.product.device $fp_dn
+setprop ro.build.product $fp_dn
+setprop ro.product.manufacturer $br_name
+setprop ro.build.tags release-keys
