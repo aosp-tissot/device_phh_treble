@@ -1,15 +1,3 @@
-on boot
-    setprop ro.bootimage.build.fingerprint ${ro.vendor.build.fingerprint}
-    setprop ro.build.fingerprint ${ro.vendor.build.fingerprint}
-	setprop ro.build.device ${ro.vendor.build.device}
-	setprop ro.product.name ${ro.vendor.product.name}
-	setprop ro.product.brand ${ro.vendor.product.brand}
-	setprop ro.product.model ${ro.vendor.product.model}
-	setprop ro.product.device ${ro.vendor.product.device}
-	setprop ro.build.product ${ro.vendor.product.product}
-	setprop ro.product.manufacturer ${ro.vendor.product.manufacturer}
-	setprop ro.build.tags release-keys
-
 on post-fs
 	exec - root -- /system/bin/vndk-detect
 	exec - root -- /system/bin/rw-system.sh
