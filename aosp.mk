@@ -5,7 +5,8 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera2.xml \
 	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2015.xml \
 	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2016.xml \
-	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2017.xml
+	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2017.xml \
+	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2018.xml
 
 DEVICE_PACKAGE_OVERLAYS += device/phh/treble/overlay-gapps
 DONT_DEXPREOPT_PREBUILTS := true
@@ -21,5 +22,5 @@ PRODUCT_PACKAGES += \
        LatinImeGoogle \
        phh-overrides
 
-# $(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
-$(call inherit-product,  vendor/gapps/config.mk)
+$(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
+# $(call inherit-product,  vendor/gapps/config.mk)
