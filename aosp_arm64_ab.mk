@@ -11,7 +11,7 @@ PRODUCT_DEVICE := phhgsi_arm64_ab
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := Phh-Treble (ARM64 - A/B)
 
-GAPPS_VARIANT := mini
+GAPPS_VARIANT := nano
 
 # AOSP Packages
 PRODUCT_PACKAGES += \
