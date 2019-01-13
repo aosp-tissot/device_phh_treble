@@ -254,3 +254,25 @@ fi
 #Found on MTK devices
 mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
 mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
+
+# Set all the correct props and pass safteynet
+resetprop ro.bootimage.build.fingerprint "$(getprop ro.vendor.build.fingerprint)"
+resetprop ro.build.fingerprint "$(getprop ro.vendor.build.fingerprint)"
+resetprop ro.build.device "$(getprop ro.vendor.build.device)"
+resetprop ro.product.name "$(getprop ro.vendor.product.name)"
+resetprop ro.product.brand "$(getprop ro.vendor.product.brand)"
+resetprop ro.product.model "$(getprop ro.vendor.product.model)"
+resetprop ro.product.device "$(getprop ro.vendor.product.device)"
+resetprop ro.build.product "$(getprop ro.vendor.product.model)"
+resetprop ro.product.manufacturer "$(getprop ro.vendor.product.manufacturer)"
+resetprop ro.build.tags release-keys
+resetprop ro.boot.vbmeta.device_state locked
+resetprop ro.boot.verifiedbootstate   green
+resetprop ro.boot.flash.locked 1
+resetprop ro.boot.veritymode enforcing
+resetprop ro.boot.warranty_bit 0
+resetprop ro.warranty_bit 0
+resetprop ro.debuggable 0
+resetprop ro.secure 1
+resetprop ro.build.type user
+resetprop ro.build.selinux 0
