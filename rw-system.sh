@@ -258,7 +258,7 @@ mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
 # Set all the correct props and pass safteynet
 resetprop ro.bootimage.build.fingerprint "$(getprop ro.vendor.build.fingerprint)"
 resetprop ro.build.fingerprint "$(getprop ro.vendor.build.fingerprint)"
-resetprop ro.build.device "$(getprop ro.vendor.build.device)"
+resetprop ro.build.device "$(getprop ro.vendor.product.device)"
 resetprop ro.product.name "$(getprop ro.vendor.product.name)"
 resetprop ro.product.brand "$(getprop ro.vendor.product.brand)"
 resetprop ro.product.model "$(getprop ro.vendor.product.model)"
