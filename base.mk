@@ -52,7 +52,8 @@ PRODUCT_COPY_FILES += \
 #   Provide default libnfc-nci.conf file for devices that does not have one in
 #   vendor/etc
 PRODUCT_COPY_FILES += \
-	device/phh/treble/nfc/libnfc-nci.conf:system/phh/libnfc-nci-oreo.conf
+	device/phh/treble/nfc/libnfc-nci.conf:system/phh/libnfc-nci-oreo.conf \
+	device/phh/treble/nfc/libnfc-nci-huawei.conf:system/phh/libnfc-nci-huawei.conf
 
 # LineageOS build may need this to make NFC work
 PRODUCT_PACKAGES += \
@@ -73,10 +74,19 @@ PRODUCT_PACKAGES += \
 	bootctl \
 	vintf
 
+# Fix Offline Charging on Huawmeme
+PRODUCT_PACKAGES += \
+	huawei-charger
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/phh/treble/huawei_charger/files,system/etc/charger)
+
 PRODUCT_COPY_FILES += \
 	device/phh/treble/twrp/twrp.rc:system/etc/init/twrp.rc \
 	device/phh/treble/twrp/twrp.sh:system/bin/twrp.sh \
 	device/phh/treble/twrp/busybox-armv7l:system/bin/busybox_phh
+
+PRODUCT_PACKAGES += \
+    simg2img_simple
 
 ifneq (,$(wildcard external/exfat))
 PRODUCT_PACKAGES += \

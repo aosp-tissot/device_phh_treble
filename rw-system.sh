@@ -1,5 +1,10 @@
 #!/system/bin/sh
 
+#Uncomment me to output sh -x of this script to /cache/phh/logs
+#if [ -z "$debug" ];then
+#	mkdir -p /cache/phh
+#	debug=1 exec sh -x "$(readlink -f -- "$0")" > /cache/phh/logs 2>&1
+#fi
 
 vndk="$(getprop persist.sys.vndk)"
 setprop sys.usb.ffs.aio_compat true
@@ -18,6 +23,7 @@ fixSPL() {
         setprop ro.keymaster.xxx.release "$Arelease"
         setprop ro.keymaster.xxx.security_patch "$(getSPL $img spl)"
 
+	getprop ro.vendor.build.fingerprint |grep -qiE '^samsung/' && return 0
         for f in \
 		/vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so \
 		/system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed \
@@ -60,7 +66,11 @@ changeKeylayout() {
         chmod 0644 /mnt/phh/keylayout/gpio_keys.kl /mnt/phh/keylayout/sec_touchscreen.kl
     fi
 
-    if getprop ro.vendor.build.fingerprint |grep -iq -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout -e xiaomi/platina -e iaomi/perseus;then
+    if getprop ro.vendor.build.fingerprint |grep -iq \
+        -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
+        -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
+        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
+        -e xiaomi/nitrogen;then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
         cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
@@ -78,6 +88,12 @@ changeKeylayout() {
         cp /system/phh/mimix3-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
         chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
         changed=true
+    fi
+
+    if getprop ro.vendor.build.fingerprint |grep -iq -E -e '^Sony/G834';then
+	cp /system/phh/sony-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
+	chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
+	changed=true
     fi
 
     if [ "$changed" == true ];then
@@ -145,6 +161,11 @@ if getprop ro.hardware |grep -qF qcom && [ -f /sys/class/backlight/panel0-backli
     setprop persist.sys.qcom-brightness $(cat /sys/class/backlight/panel0-backlight/max_brightness)
 fi
 
+#Sony don't use Qualcomm HAL, so they don't have their mess
+if getprop ro.vendor.build.fingerprint |grep -qE 'Sony/';then
+    setprop persist.sys.qcom-brightness -1
+fi
+
 if getprop ro.vendor.build.fingerprint |grep -qi oneplus/oneplus6/oneplus6;then
 	resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
 fi
@@ -166,16 +187,28 @@ if grep -qF 'mkdir /data/.fps 0770 system fingerp' vendor/etc/init/hw/init.mmi.r
     chown system:9015 /sys/devices/soc/soc:fpc_fpc1020/irq_cnt
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q -i -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina;then
+if getprop ro.vendor.build.fingerprint |grep -q -i \
+    -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
+    -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
+    -e xiaomi/ysl;then
     setprop persist.sys.qcom-brightness $(cat /sys/class/leds/lcd-backlight/max_brightness)
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q \
+if getprop ro.vendor.build.fingerprint |grep -iq \
 	-e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius \
 	-e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris \
-	-e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina ;then
+	-e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
+	-e iaomi/equuleus/equuleus -e motorola/nora -e xiaomi/nitrogen \
+	-e motorola/hannah;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+fi
+
+if [ "$(getprop ro.vendor.product.manufacturer)" == "motorola" ];then
+    if getprop ro.vendor.product.device |grep -q -e nora -e ali -e hannah;then
+        mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
+        mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+    fi
 fi
 
 if getprop ro.vendor.build.fingerprint |grep -q -i -e xiaomi/wayne -e xiaomi/jasmine;then
@@ -229,6 +262,18 @@ if getprop ro.product.model |grep -qF ANE;then
 	setprop debug.sf.latch_unsignaled 1
 fi
 
+if getprop ro.vendor.build.fingerprint |grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei |grep -iq -E -e 'true' ; then
+	p=/product/etc/nfc/libnfc_nxp_*_*.conf
+	mount -o bind "$p" /system/etc/libnfc-nxp.conf || \
+		mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
+
+	p=/product/etc/nfc/libnfc_brcm_*_*.conf
+	mount -o bind "$p" /system/etc/libnfc-brcm.conf || \
+		mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
+
+	mount -o bind /system/phh/libnfc-nci-huawei.conf /system/etc/libnfc-nci.conf
+fi
+
 if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*"  -e ".*(SC-0[23]K|SCV3[89]).*";then
 	for f in /vendor/lib/libfloatingfeature.so /vendor/lib64/libfloatingfeature.so;do
 		[ ! -f $f ] && continue
@@ -242,6 +287,19 @@ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" 
 		chcon "$ctxt" /mnt/phh/$b
 		mount -o bind /mnt/phh/$b $f
 	done
+fi
+
+
+if getprop ro.vendor.build.fingerprint |grep -qiE '^samsung';then
+	if getprop ro.hardware |grep -q qcom;then
+		setprop persist.sys.overlay.devinputjack false
+	fi
+
+	if getprop ro.hardware |grep -q -e samsungexynos7870 -e qcom;then
+		if [ "$vndk" -le 27 ];then
+			setprop persist.sys.phh.sdk_override /vendor/bin/hw/rild=27
+		fi
+	fi
 fi
 
 mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
