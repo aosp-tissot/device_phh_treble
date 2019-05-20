@@ -10,46 +10,46 @@ vndk="$(getprop persist.sys.vndk)"
 setprop sys.usb.ffs.aio_compat true
 
 fixSPL() {
-    if [ "$(getprop ro.product.cpu.abi)" == "armeabi-v7a" ];then
-	    setprop ro.keymaster.mod 'AOSP on ARM32'
+    if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
+        setprop ro.keymaster.mod 'AOSP on ARM32'
     else
-	    setprop ro.keymaster.mod 'AOSP on ARM64'
+        setprop ro.keymaster.mod 'AOSP on ARM64'
     fi
-    img="$(find /dev/block -type l -name kernel$(getprop ro.boot.slot_suffix) |grep by-name |head -n 1)"
-    [ -z "$img" ] && img="$(find /dev/block -type l -name boot$(getprop ro.boot.slot_suffix) |grep by-name |head -n 1)"
-    if [ -n "$img" ];then
+    img="$(find /dev/block -type l -name kernel"$(getprop ro.boot.slot_suffix)" | grep by-name | head -n 1)"
+    [ -z "$img" ] && img="$(find /dev/block -type l -name boot"$(getprop ro.boot.slot_suffix)" | grep by-name | head -n 1)"
+    if [ -n "$img" ]; then
         #Rewrite SPL/Android version if needed
-        Arelease="$(getSPL $img android)"
+        Arelease="$(getSPL "$img" android)"
         setprop ro.keymaster.xxx.release "$Arelease"
-        setprop ro.keymaster.xxx.security_patch "$(getSPL $img spl)"
+        setprop ro.keymaster.xxx.security_patch "$(getSPL "$img" spl)"
 
-	getprop ro.vendor.build.fingerprint |grep -qiE '^samsung/' && return 0
+        getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && return 0
         for f in \
-		/vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so \
-		/system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed \
-		/system/lib64/vndk/libsoftkeymasterdevice.so /system/lib/vndk/libsoftkeymasterdevice.so \
-		/system/lib/vndk-26/libsoftkeymasterdevice.so \
-		/system/lib/vndk-27/libsoftkeymasterdevice.so /system/lib64/vndk-27/libsoftkeymasterdevice.so \
-		;do
-            [ ! -f $f ] && continue
-            ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
-            b="$(echo "$f"|tr / _)"
+            /vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so \
+            /system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed \
+            /system/lib64/vndk/libsoftkeymasterdevice.so /system/lib/vndk/libsoftkeymasterdevice.so \
+            /system/lib/vndk-26/libsoftkeymasterdevice.so \
+            /system/lib/vndk-27/libsoftkeymasterdevice.so /system/lib64/vndk-27/libsoftkeymasterdevice.so; do
+            [ ! -f "$f" ] && continue
+            # shellcheck disable=SC2010
+            ctxt="$(ls -lZ "$f" | grep -oE 'u:object_r:[^:]*:s0')"
+            b="$(echo "$f" | tr / _)"
 
-            cp -a $f /mnt/phh/$b
+            cp -a "$f" "/mnt/phh/$b"
             sed -i \
-		    -e 's/ro.build.version.release/ro.keymaster.xxx.release/g' \
-		    -e 's/ro.build.version.security_patch/ro.keymaster.xxx.security_patch/g' \
-		    -e 's/ro.product.model/ro.keymaster.mod/g' \
-		    /mnt/phh/$b
-            chcon "$ctxt" /mnt/phh/$b
-            mount -o bind /mnt/phh/$b $f
+                -e 's/ro.build.version.release/ro.keymaster.xxx.release/g' \
+                -e 's/ro.build.version.security_patch/ro.keymaster.xxx.security_patch/g' \
+                -e 's/ro.product.model/ro.keymaster.mod/g' \
+                "/mnt/phh/$b"
+            chcon "$ctxt" "/mnt/phh/$b"
+            mount -o bind "/mnt/phh/$b" "$f"
         done
-        if [ "$(getprop init.svc.keymaster-3-0)" == "running" ];then
-		setprop ctl.restart keymaster-3-0
-	fi
-        if [ "$(getprop init.svc.teed)" == "running" ];then
-		setprop ctl.restart teed
-	fi
+        if [ "$(getprop init.svc.keymaster-3-0)" = "running" ]; then
+            setprop ctl.restart keymaster-3-0
+        fi
+        if [ "$(getprop init.svc.teed)" = "running" ]; then
+            setprop ctl.restart teed
+        fi
     fi
 }
 
@@ -57,8 +57,8 @@ changeKeylayout() {
     cp -a /system/usr/keylayout /mnt/phh/keylayout
     changed=false
 
-    if getprop ro.vendor.build.fingerprint | \
-        grep -qE -e ".*(crown|star)[q2]*lte.*"  -e ".*(SC-0[23]K|SCV3[89]).*";then
+    if getprop ro.vendor.build.fingerprint |
+        grep -qE -e ".*(crown|star)[q2]*lte.*" -e ".*(SC-0[23]K|SCV3[89]).*"; then
         changed=true
 
         cp /system/phh/samsung-gpio_keys.kl /mnt/phh/keylayout/gpio_keys.kl
@@ -66,11 +66,12 @@ changeKeylayout() {
         chmod 0644 /mnt/phh/keylayout/gpio_keys.kl /mnt/phh/keylayout/sec_touchscreen.kl
     fi
 
-    if getprop ro.vendor.build.fingerprint |grep -iq \
+    if getprop ro.vendor.build.fingerprint | grep -iq \
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
-        -e xiaomi/nitrogen;then
+        -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
+        -e xiaomi/whyred; then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
         cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
@@ -78,25 +79,25 @@ changeKeylayout() {
         changed=true
     fi
 
-    if getprop ro.vendor.build.fingerprint |grep -qi oneplus/oneplus6/oneplus6;then
+    if getprop ro.vendor.build.fingerprint | grep -qi oneplus/oneplus6/oneplus6; then
         cp /system/phh/oneplus6-synaptics_s3320.kl /mnt/phh/keylayout/synaptics_s3320.kl
         chmod 0644 /mnt/phh/keylayout/synaptics_s3320.kl
         changed=true
     fi
 
-    if getprop ro.vendor.build.fingerprint |grep -iq -e iaomi/perseus;then
+    if getprop ro.vendor.build.fingerprint | grep -iq -e iaomi/perseus -e iaomi/cepheus; then
         cp /system/phh/mimix3-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
         chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
         changed=true
     fi
 
-    if getprop ro.vendor.build.fingerprint |grep -iq -E -e '^Sony/G834';then
-	cp /system/phh/sony-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
-	chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
-	changed=true
+    if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^Sony/G834'; then
+        cp /system/phh/sony-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
+        chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
+        changed=true
     fi
 
-    if [ "$changed" == true ];then
+    if [ "$changed" = true ]; then
         mount -o bind /mnt/phh/keylayout /system/usr/keylayout
         restorecon -R /system/usr/keylayout
     fi
@@ -133,10 +134,10 @@ changeKeylayout() {
     fi
 }
 
-if mount -o remount,rw /system;then
-	resize2fs $(grep ' /system ' /proc/mounts |cut -d ' ' -f 1) || true
-elif mount -o remount,rw /;then
-	resize2fs /dev/root || true
+if mount -o remount,rw /system; then
+    resize2fs "$(grep ' /system ' /proc/mounts | cut -d ' ' -f 1)" || true
+elif mount -o remount,rw /; then
+    resize2fs /dev/root || true
 fi
 mount -o remount,ro /system || true
 mount -o remount,ro / || true
@@ -148,37 +149,37 @@ fixSPL
 
 changeKeylayout
 
-if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml;then
+if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml; then
     mount -o bind system/phh/huawei/fingerprint.kl /vendor/usr/keylayout/fingerprint.kl
 fi
 
-if ! grep android.hardware.biometrics.fingerprint /vendor/manifest.xml;then
+if ! grep android.hardware.biometrics.fingerprint /vendor/manifest.xml && ! grep android.hardware.biometrics.fingerprint /vendor/etc/vintf/manifest.xml; then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.fingerprint.xml
 fi
 
-if getprop ro.hardware |grep -qF qcom && [ -f /sys/class/backlight/panel0-backlight/max_brightness ] && \
-        grep -qvE '^255$' /sys/class/backlight/panel0-backlight/max_brightness;then
-    setprop persist.sys.qcom-brightness $(cat /sys/class/backlight/panel0-backlight/max_brightness)
+if getprop ro.hardware | grep -qF qcom && [ -f /sys/class/backlight/panel0-backlight/max_brightness ] &&
+    grep -qvE '^255$' /sys/class/backlight/panel0-backlight/max_brightness; then
+    setprop persist.sys.qcom-brightness "$(cat /sys/class/backlight/panel0-backlight/max_brightness)"
 fi
 
 #Sony don't use Qualcomm HAL, so they don't have their mess
-if getprop ro.vendor.build.fingerprint |grep -qE 'Sony/';then
+if getprop ro.vendor.build.fingerprint | grep -qE 'Sony/'; then
     setprop persist.sys.qcom-brightness -1
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -qi oneplus/oneplus6/oneplus6;then
-	resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
+if getprop ro.vendor.build.fingerprint | grep -qi oneplus/oneplus6/oneplus6; then
+    resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q full_k50v1_64 || getprop ro.hardware |grep -q mt6580 ;then
-	setprop persist.sys.overlay.nightmode false
+if getprop ro.vendor.build.fingerprint | grep -q full_k50v1_64 || getprop ro.hardware | grep -q mt6580; then
+    setprop persist.sys.overlay.nightmode false
 fi
 
-if getprop ro.wlan.mtk.wifi.5g |grep -q 1;then
-	setprop persist.sys.overlay.wifi5g true
+if getprop ro.wlan.mtk.wifi.5g | grep -q 1; then
+    setprop persist.sys.overlay.wifi5g true
 fi
 
-if grep -qF 'mkdir /data/.fps 0770 system fingerp' vendor/etc/init/hw/init.mmi.rc;then
+if grep -qF 'mkdir /data/.fps 0770 system fingerp' vendor/etc/init/hw/init.mmi.rc; then
     mkdir -p /data/.fps
     chmod 0770 /data/.fps
     chown system:9015 /data/.fps
@@ -187,119 +188,155 @@ if grep -qF 'mkdir /data/.fps 0770 system fingerp' vendor/etc/init/hw/init.mmi.r
     chown system:9015 /sys/devices/soc/soc:fpc_fpc1020/irq_cnt
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q -i \
+if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
-    -e xiaomi/ysl;then
-    setprop persist.sys.qcom-brightness $(cat /sys/class/leds/lcd-backlight/max_brightness)
+    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61; then
+    setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -iq \
-	-e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius \
-	-e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris \
-	-e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
-	-e iaomi/equuleus/equuleus -e motorola/nora -e xiaomi/nitrogen \
-	-e motorola/hannah;then
+if getprop ro.vendor.product.device |grep -iq -e RMX1801 -e RMX1803 -e RMX1807;then	
+    setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -iq \
+    -e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius \
+    -e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris \
+    -e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
+    -e iaomi/equuleus/equuleus -e motorola/nora -e xiaomi/nitrogen \
+    -e motorola/hannah -e motorola/james -e motorola/pettyl -e iaomi/cepheus \
+    -e iaomi/grus;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
 fi
 
-if [ "$(getprop ro.vendor.product.manufacturer)" == "motorola" ];then
-    if getprop ro.vendor.product.device |grep -q -e nora -e ali -e hannah;then
-        mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
-        mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+if [ "$(getprop ro.vendor.product.manufacturer)" = "motorola" ] || [ "$(getprop ro.product.vendor.manufacturer)" = "motorola" ]; then
+    if getprop ro.vendor.product.device | grep -q -e nora -e ali -e hannah -e evert -e jeter -e deen -e james -e pettyl -e jater; then
+        if [ "$vndk" -ge 28 ]; then
+            f="/vendor/lib/libeffects.so"
+            # shellcheck disable=SC2010
+            ctxt="$(ls -lZ $f | grep -oE 'u:object_r:[^:]*:s0')"
+            b="$(echo "$f" | tr / _)"
+
+            cp -a $f "/mnt/phh/$b"
+            sed -i \
+                's/%zu errors during loading of configuration: %s/%zu errors during loading of configuration: ss/g' \
+                "/mnt/phh/$b"
+            chcon "$ctxt" "/mnt/phh/$b"
+            mount -o bind "/mnt/phh/$b" $f
+        else
+            mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
+            mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+        fi
     fi
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q -i -e xiaomi/wayne -e xiaomi/jasmine;then
+if getprop ro.vendor.build.fingerprint | grep -q -i -e xiaomi/wayne -e xiaomi/jasmine; then
     setprop persist.imx376_sunny.low.lux 310
     setprop persist.imx376_sunny.light.lux 280
     setprop persist.imx376_ofilm.low.lux 310
     setprop persist.imx376_ofilm.light.lux 280
+    echo "none" > /sys/class/leds/led:torch_2/trigger
 fi
 
-for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.so /vendor/lib64/libmtk-ril.so;do
+for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.so /vendor/lib64/libmtk-ril.so; do
     [ ! -f $f ] && continue
-    ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
-    b="$(echo "$f"|tr / _)"
+    # shellcheck disable=SC2010
+    ctxt="$(ls -lZ "$f" | grep -oE 'u:object_r:[^:]*:s0')"
+    b="$(echo "$f" | tr / _)"
 
-    cp -a $f /mnt/phh/$b
+    cp -a "$f" "/mnt/phh/$b"
     sed -i \
         -e 's/AT+EAIC=2/AT+EAIC=3/g' \
-        /mnt/phh/$b
-    chcon "$ctxt" /mnt/phh/$b
-    mount -o bind /mnt/phh/$b $f
+        "/mnt/phh/$b"
+    chcon "$ctxt" "/mnt/phh/$b"
+    mount -o bind "/mnt/phh/$b" "$f"
+
+    setprop persist.sys.phh.radio.force_cognitive true
+    setprop persist.sys.radio.ussd.fix true
 done
 
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkTheme.apk || true
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkThemeOverlay.apk || true
 
-if grep -qF 'PowerVR Rogue GE8100' /vendor/lib/egl/GLESv1_CM_mtk.so || \
-	grep -qF 'PowerVR Rogue' /vendor/lib/egl/libGLESv1_CM_mtk.so || \
-	(getprop ro.product.board | grep -qE -e msm8917 -e msm8937 -e msm8940);then
+if grep -qF 'PowerVR Rogue GE8100' /vendor/lib/egl/GLESv1_CM_mtk.so ||
+    grep -qF 'PowerVR Rogue' /vendor/lib/egl/libGLESv1_CM_mtk.so ||
+    ( (getprop ro.product.board; getprop ro.board.platform) | grep -qiE -e msm8917 -e msm8937 -e msm8940); then
 
-	setprop debug.hwui.renderer opengl
+    setprop debug.hwui.renderer opengl
 fi
 
 #If we have both Samsung and AOSP power hal, take Samsung's
-if [ -f /vendor/bin/hw/vendor.samsung.hardware.miscpower@1.0-service ];then
-	mount -o bind /system/phh/empty /vendor/bin/hw/android.hardware.power@1.0-service
+if [ -f /vendor/bin/hw/vendor.samsung.hardware.miscpower@1.0-service ] && [ "$vndk" -lt 28 ]; then
+    mount -o bind /system/phh/empty /vendor/bin/hw/android.hardware.power@1.0-service
 fi
 
-if [ "$vndk" == 27 -o "$vndk" == 26 ];then
+if [ "$vndk" = 27 ] || [ "$vndk" = 26 ]; then
     mount -o bind /system/phh/libnfc-nci-oreo.conf /system/etc/libnfc-nci.conf
 fi
 
-if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex |grep -qF -e Landroid/telephony/ims/feature/MmTelFeature -e Landroid/telephony/ims/feature/MMTelFeature;then
+if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex | grep -qF -e Landroid/telephony/ims/feature/MmTelFeature -e Landroid/telephony/ims/feature/MMTelFeature; then
     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
 fi
 
-if getprop ro.hardware |grep -qF samsungexynos;then
-	setprop debug.sf.latch_unsignaled 1
+if getprop ro.hardware | grep -qF samsungexynos; then
+    setprop debug.sf.latch_unsignaled 1
 fi
 
-if getprop ro.product.model |grep -qF ANE;then
-	setprop debug.sf.latch_unsignaled 1
+if getprop ro.product.model | grep -qF ANE; then
+    setprop debug.sf.latch_unsignaled 1
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei |grep -iq -E -e 'true' ; then
-	p=/product/etc/nfc/libnfc_nxp_*_*.conf
-	mount -o bind "$p" /system/etc/libnfc-nxp.conf || \
-		mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
+if getprop ro.vendor.build.fingerprint | grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei | grep -iq -E -e 'true'; then
+    p=/product/etc/nfc/libnfc_nxp_*_*.conf
+    mount -o bind "$p" /system/etc/libnfc-nxp.conf ||
+        mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
 
-	p=/product/etc/nfc/libnfc_brcm_*_*.conf
-	mount -o bind "$p" /system/etc/libnfc-brcm.conf || \
-		mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
+    p=/product/etc/nfc/libnfc_brcm_*_*.conf
+    mount -o bind "$p" /system/etc/libnfc-brcm.conf ||
+        mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
 
-	mount -o bind /system/phh/libnfc-nci-huawei.conf /system/etc/libnfc-nci.conf
+    mount -o bind /system/phh/libnfc-nci-huawei.conf /system/etc/libnfc-nci.conf
 fi
 
-if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*"  -e ".*(SC-0[23]K|SCV3[89]).*";then
-	for f in /vendor/lib/libfloatingfeature.so /vendor/lib64/libfloatingfeature.so;do
-		[ ! -f $f ] && continue
-		ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
-		b="$(echo "$f"|tr / _)"
+if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" -e ".*(SC-0[23]K|SCV3[89]).*" && [ "$vndk" -lt 28 ]; then
+    for f in /vendor/lib/libfloatingfeature.so /vendor/lib64/libfloatingfeature.so; do
+        [ ! -f "$f" ] && continue
+        # shellcheck disable=SC2010
+        ctxt="$(ls -lZ "$f" | grep -oE 'u:object_r:[^:]*:s0')"
+        b="$(echo "$f" | tr / _)"
 
-		cp -a $f /mnt/phh/$b
-		sed -i \
-			-e 's;/system/etc/floating_feature.xml;/system/ph/sam-9810-flo_feat.xml;g' \
-			/mnt/phh/$b
-		chcon "$ctxt" /mnt/phh/$b
-		mount -o bind /mnt/phh/$b $f
-	done
+        cp -a "$f" "/mnt/phh/$b"
+        sed -i \
+            -e 's;/system/etc/floating_feature.xml;/system/ph/sam-9810-flo_feat.xml;g' \
+            "/mnt/phh/$b"
+        chcon "$ctxt" "/mnt/phh/$b"
+        mount -o bind "/mnt/phh/$b" "$f"
+
+	setprop ro.audio.monitorRotation true
+    done
 fi
 
+# This matches both Razer Phone 1 & 2
+if getprop ro.vendor.build.fingerprint |grep -qE razer/cheryl;then
+	setprop ro.audio.monitorRotation true
+fi
 
-if getprop ro.vendor.build.fingerprint |grep -qiE '^samsung';then
-	if getprop ro.hardware |grep -q qcom;then
-		setprop persist.sys.overlay.devinputjack false
-	fi
+if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung'; then
+    if getprop ro.hardware | grep -q qcom; then
+        setprop persist.sys.overlay.devinputjack false
+    fi
 
-	if getprop ro.hardware |grep -q -e samsungexynos7870 -e qcom;then
-		if [ "$vndk" -le 27 ];then
-			setprop persist.sys.phh.sdk_override /vendor/bin/hw/rild=27
-		fi
-	fi
+    if getprop ro.hardware | grep -q -e samsungexynos7870 -e qcom; then
+        if [ "$vndk" -le 27 ]; then
+            setprop persist.sys.phh.sdk_override /vendor/bin/hw/rild=27
+        fi
+    fi
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/(daisy|wayne)/(daisy|wayne).*'; then
+    # Fix camera on DND, ugly workaround but meh
+    setprop audio.camerasound.force true
 fi
 
 mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
@@ -314,15 +351,33 @@ mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
 mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
 
 # Set all the correct props and pass safteynet
-resetprop ro.bootimage.build.fingerprint "$(getprop ro.vendor.build.fingerprint)"
-resetprop ro.build.fingerprint "$(getprop ro.vendor.build.fingerprint)"
-resetprop ro.build.device "$(getprop ro.vendor.product.device)"
-resetprop ro.product.name "$(getprop ro.vendor.product.name)"
-resetprop ro.product.brand "$(getprop ro.vendor.product.brand)"
-resetprop ro.product.model "$(getprop ro.vendor.product.model)"
-resetprop ro.product.device "$(getprop ro.vendor.product.device)"
-resetprop ro.build.product "$(getprop ro.vendor.product.model)"
-resetprop ro.product.manufacturer "$(getprop ro.vendor.product.manufacturer)"
+copyprop() {
+  p="$(getprop "$2")"
+  [ -n "$p" ] && resetprop "$1" "$(getprop "$2")"
+}
+
+copyprop() {
+  p="$(getprop "$2")"
+  if [ "$p" ]; then
+	resetprop "$1" "$(getprop "$2")"
+  fi
+}
+
+copyprop ro.build.device ro.vendor.build.device
+copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
+copyprop ro.build.fingerprint ro.vendor.build.fingerprint
+copyprop ro.build.device ro.vendor.product.device
+copyprop ro.product.device ro.vendor.product.device
+copyprop ro.product.device ro.product.vendor.device
+copyprop ro.product.name ro.vendor.product.name
+copyprop ro.product.name ro.product.vendor.device
+copyprop ro.product.brand ro.vendor.product.brand
+copyprop ro.product.model ro.vendor.product.model
+copyprop ro.product.model ro.product.vendor.model
+copyprop ro.build.product ro.vendor.product.model
+copyprop ro.build.product ro.product.vendor.model
+copyprop ro.product.manufacturer ro.vendor.product.manufacturer
+copyprop ro.product.manufacturer ro.product.vendor.manufacturer
 resetprop ro.build.tags release-keys
 resetprop ro.boot.vbmeta.device_state locked
 resetprop ro.boot.verifiedbootstate   green
@@ -334,3 +389,19 @@ resetprop ro.debuggable 0
 resetprop ro.secure 1
 resetprop ro.build.type user
 resetprop ro.build.selinux 0
+
+for f in /vendor/lib{,64}/hw/com.qti.chi.override.so;do
+    [ ! -f $f ] && continue
+    # shellcheck disable=SC2010
+    ctxt="$(ls -lZ "$f" | grep -oE 'u:object_r:[^:]*:s0')"
+    b="$(echo "$f" | tr / _)"
+
+    cp -a "$f" "/mnt/phh/$b"
+    sed -i \
+        -e 's/ro.product.manufacturer/sys.phh.xx.manufacturer/g' \
+        "/mnt/phh/$b"
+    chcon "$ctxt" "/mnt/phh/$b"
+    mount -o bind "/mnt/phh/$b" "$f"
+
+    setprop sys.phh.xx.manufacturer "$(getprop ro.product.vendor.manufacturer)"
+done

@@ -129,3 +129,10 @@ PRODUCT_COPY_FILES += \
 # Camera
 PRODUCT_PACKAGES += \
         SnapdragonCamera
+
+#MTK incoming SMS fix
+PRODUCT_PACKAGES += \
+	mtk-sms-fwk-ready
+
+PRODUCT_PACKAGES += \
+	Stk

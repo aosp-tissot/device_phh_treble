@@ -28,6 +28,7 @@ if [ -n "$FOUND_HUAWEI" ];then
 	setprop persist.sys.bt_acl_bypass true
  	setprop persist.sys.camera.huawei true
 	setprop persist.sys.radio.ussd.fix true
+	setprop persist.sys.radio.huawei true
 	setprop debug.hwui.profile true
 fi
 
@@ -38,8 +39,4 @@ if getprop ro.hardware |grep -qiE -e qcom -e judyln -e judypn;then
     else
         setprop persist.sys.overlay.devinputjack true
     fi
-fi
-
-if getprop Build.BRAND  | grep -qiE -e MTK;then
-   setprop persist.sys.radio.ussd.fix true
 fi
