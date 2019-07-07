@@ -111,3 +111,43 @@ cc_binary {
 		"libhidlbase",
 	],
 }
+
+cc_binary {
+	name: "oneplus-motor",
+	srcs: [
+		"oneplus-motor.cpp",
+	],
+	shared_libs: [
+		"vendor.oneplus.hardware.motorcontrol@1.0",
+		"libutils",
+		"libhidlbase",
+	],
+}
+
+cc_binary {
+	name: "persistprops",
+	srcs: [
+		"persistent_properties.proto",
+		"persistprops.cpp",
+	],
+	static_executable: true,
+	proto: {
+		type: "lite",
+		static: true,
+	},
+	static_libs: [
+		"libprotobuf-cpp-lite"
+	],
+}
+
+cc_binary {
+	name: "lightsctl-huawei",
+	srcs: [
+		"lightsctl-huawei.cpp",
+	],
+	shared_libs: [
+		"vendor.huawei.hardware.light@2.0",
+		"libutils",
+		"libhidlbase",
+	],
+}

@@ -72,11 +72,16 @@ changeKeylayout() {
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
         -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
         -e xiaomi/whyred -e xiaomi/tulip; then
-        cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
-        chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
-        cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
-        chmod 0644 /mnt/phh/keylayout/uinput-fpc.kl
-        changed=true
+        if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
+          cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
+          chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
+          changed=true
+        fi
+        if [ ! -f /mnt/phh/keylayout/uinput-fpc.kl ]; then
+          cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
+          chmod 0644 /mnt/phh/keylayout/uinput-fpc.kl
+          changed=true
+        fi
     fi
 
     if getprop ro.vendor.build.fingerprint | grep -qi oneplus/oneplus6/oneplus6; then
@@ -205,7 +210,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
     -e iaomi/equuleus/equuleus -e motorola/nora -e xiaomi/nitrogen \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e iaomi/cepheus \
-    -e iaomi/grus -e xiaomi/cereus;then
+    -e iaomi/grus -e xiaomi/cereus -e iaomi/raphael;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
@@ -406,3 +411,7 @@ for f in /vendor/lib{,64}/hw/com.qti.chi.override.so;do
 
     setprop sys.phh.xx.manufacturer "$(getprop ro.product.vendor.manufacturer)"
 done
+
+if [ -n "$(getprop ro.boot.product.hardware.sku)" ] && [ -z "$(getprop ro.hw.oemName)" ];then
+	setprop ro.hw.oemName "$(getprop ro.boot.product.hardware.sku)"
+fi

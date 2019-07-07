@@ -134,5 +134,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	mtk-sms-fwk-ready
 
+# Helper to debug Xiaomi motorized camera
+PRODUCT_PACKAGES += \
+	xiaomi-motor
+
 PRODUCT_PACKAGES += \
 	Stk
+
+PRODUCT_PACKAGES += \
+	ch.deletescape.lawnchair.plah
