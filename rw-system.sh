@@ -7,6 +7,7 @@
 #fi
 
 vndk="$(getprop persist.sys.vndk)"
+[ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
 setprop sys.usb.ffs.aio_compat true
 
 fixSPL() {
@@ -154,12 +155,19 @@ fixSPL
 
 changeKeylayout
 
+mount /system/phh/empty /vendor/bin/vendor.samsung.security.proca@1.0-service || true
+
 if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml; then
     mount -o bind system/phh/huawei/fingerprint.kl /vendor/usr/keylayout/fingerprint.kl
 fi
 
 if ! grep android.hardware.biometrics.fingerprint /vendor/manifest.xml && ! grep android.hardware.biometrics.fingerprint /vendor/etc/vintf/manifest.xml; then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.fingerprint.xml
+fi
+
+if ! grep android.hardware.bluetooth /vendor/manifest.xml && ! grep android.hardware.bluetooth /vendor/etc/vintf/manifest.xml; then
+    mount -o bind system/phh/empty /system/etc/permissions/android.hardware.bluetooth.xml
+    mount -o bind system/phh/empty /system/etc/permissions/android.hardware.bluetooth_le.xml
 fi
 
 if getprop ro.hardware | grep -qF qcom && [ -f /sys/class/backlight/panel0-backlight/max_brightness ] &&
