@@ -44,7 +44,6 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
 PRODUCT_COPY_FILES += \
 	device/phh/treble/vndk-detect:system/bin/vndk-detect \
 	device/phh/treble/vndk.rc:system/etc/init/vndk.rc \
-	device/phh/treble/ld.config.26.txt:system/etc/ld.config.26.txt \
 
 #USB Audio
 PRODUCT_COPY_FILES += \
@@ -59,7 +58,7 @@ PRODUCT_COPY_FILES += \
 
 # LineageOS build may need this to make NFC work
 PRODUCT_PACKAGES += \
-        NfcNci  
+        NfcNci \
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/rw-system.sh:system/bin/rw-system.sh \
@@ -70,11 +69,11 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
 
 PRODUCT_PACKAGES += \
-	treble-environ-rc
+	treble-environ-rc \
 
 PRODUCT_PACKAGES += \
 	bootctl \
-	vintf
+	vintf \
 
 # Fix Offline Charging on Huawmeme
 PRODUCT_PACKAGES += \
@@ -144,4 +143,15 @@ PRODUCT_PACKAGES += \
 	Stk
 
 PRODUCT_PACKAGES += \
-	ch.deletescape.lawnchair.plah
+	resetprop
+PRODUCT_COPY_FILES += \
+	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
+
+PRODUCT_COPY_FILES += \
+	frameworks/native/data/etc/android.software.secure_lock_screen.xml:system/etc/permissions/android.software.secure_lock_screen.xml \
+
+PRODUCT_COPY_FILES += \
+        device/phh/treble/ld.config.26.txt:system/etc/ld.config.26.txt \
+
+PRODUCT_PACKAGES += \
+    asus-motor

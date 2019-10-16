@@ -8,7 +8,13 @@
 
 vndk="$(getprop persist.sys.vndk)"
 [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
+
+if [ "$vndk" = 26 ];then
+	resetprop ro.vndk.version 26
+fi
+
 setprop sys.usb.ffs.aio_compat true
+setprop persist.adb.nonblocking_ffs false
 
 fixSPL() {
     if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
@@ -30,7 +36,8 @@ fixSPL() {
             /system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed \
             /system/lib64/vndk/libsoftkeymasterdevice.so /system/lib/vndk/libsoftkeymasterdevice.so \
             /system/lib/vndk-26/libsoftkeymasterdevice.so \
-            /system/lib/vndk-27/libsoftkeymasterdevice.so /system/lib64/vndk-27/libsoftkeymasterdevice.so; do
+            /system/lib/vndk-27/libsoftkeymasterdevice.so /system/lib64/vndk-27/libsoftkeymasterdevice.so \
+	    /vendor/lib/libkeymaster3device.so /vendor/lib64/libkeymaster3device.so ; do
             [ ! -f "$f" ] && continue
             # shellcheck disable=SC2010
             ctxt="$(ls -lZ "$f" | grep -oE 'u:object_r:[^:]*:s0')"
@@ -59,7 +66,7 @@ changeKeylayout() {
     changed=false
 
     if getprop ro.vendor.build.fingerprint |
-        grep -qE -e ".*(crown|star)[q2]*lte.*" -e ".*(SC-0[23]K|SCV3[89]).*"; then
+        grep -qE -e "^samsung"; then
         changed=true
 
         cp /system/phh/samsung-gpio_keys.kl /mnt/phh/keylayout/gpio_keys.kl
@@ -143,7 +150,11 @@ changeKeylayout() {
 if mount -o remount,rw /system; then
     resize2fs "$(grep ' /system ' /proc/mounts | cut -d ' ' -f 1)" || true
 elif mount -o remount,rw /; then
+    major="$(stat -c '%D' /.|sed -E 's/^([0-9a-f]+)([0-9a-f]{2})$/\1/g')"
+    minor="$(stat -c '%D' /.|sed -E 's/^([0-9a-f]+)([0-9a-f]{2})$/\2/g')"
+    mknod /dev/tmp-phh b $((0x$major)) $((0x$minor))
     resize2fs /dev/root || true
+    resize2fs /dev/tmp-phh || true
 fi
 mount -o remount,ro /system || true
 mount -o remount,ro / || true
@@ -423,3 +434,72 @@ done
 if [ -n "$(getprop ro.boot.product.hardware.sku)" ] && [ -z "$(getprop ro.hw.oemName)" ];then
 	setprop ro.hw.oemName "$(getprop ro.boot.product.hardware.sku)"
 fi
+
+if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 28 ];then
+	setprop persist.sys.phh.samsung_fingerprint 0
+	#obviously broken perms
+	if [ "$(stat -c '%A' /sys/class/sec/tsp/ear_detect_enable)" == "-rw-rw-r--" ] &&
+		[ "$(stat -c '%U' /sys/class/sec/tsp/ear_detect_enable)" == "root" ] &&
+		[ "$(stat -c '%G' /sys/class/sec/tsp/ear_detect_enable)" == "root" ];then
+
+		chcon u:object_r:sysfs_ss_writable:s0 /sys/class/sec/tsp/ear_detect_enable
+		chown system /sys/class/sec/tsp/ear_detect_enable
+
+		chcon u:object_r:sysfs_ss_writable:s0 /sys/class/sec/tsp/cmd{,_list,_result,_status}
+		chown system /sys/class/sec/tsp/cmd{,_list,_result,_status}
+
+		chown system /sys/class/power_supply/battery/wc_tx_en
+		chcon u:object_r:sysfs_app_writable:s0 /sys/class/power_supply/battery/wc_tx_en
+
+	fi
+
+	if [ "$(stat -c '%U' /sys/class/sec/tsp/input/enabled)" == "root" ] &&
+		[ "$(stat -c '%G' /sys/class/sec/tsp/input/enabled)" == "root" ];then
+			chown system:system /sys/class/sec/tsp/input/enabled
+			chcon u:object_r:sysfs_ss_writable:s0 /sys/class/sec/tsp/input/enabled
+			setprop ctl.restart sec-miscpower-1-0
+	fi
+fi
+
+if [ -f /system/phh/secure ];then
+    copyprop() {
+        p="$(getprop "$2")"
+        if [ "$p" ]; then
+            resetprop "$1" "$(getprop "$2")"
+        fi
+    }
+
+    copyprop ro.build.device ro.vendor.build.device
+    copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
+    copyprop ro.build.fingerprint ro.vendor.build.fingerprint
+    copyprop ro.build.device ro.vendor.product.device
+    copyprop ro.product.device ro.vendor.product.device
+    copyprop ro.product.device ro.product.vendor.device
+    copyprop ro.product.name ro.vendor.product.name
+    copyprop ro.product.name ro.product.vendor.device
+    copyprop ro.product.brand ro.vendor.product.brand
+    copyprop ro.product.model ro.vendor.product.model
+    copyprop ro.product.model ro.product.vendor.model
+    copyprop ro.build.product ro.vendor.product.model
+    copyprop ro.build.product ro.product.vendor.model
+    copyprop ro.product.manufacturer ro.vendor.product.manufacturer
+    copyprop ro.product.manufacturer ro.product.vendor.manufacturer
+    copyprop ro.build.version.security_patch ro.keymaster.xxx.security_patch
+    copyprop ro.build.version.security_patch ro.vendor.build.security_patch
+    resetprop ro.build.tags release-keys
+    resetprop ro.boot.vbmeta.device_state locked
+    resetprop ro.boot.verifiedbootstate green
+    resetprop ro.boot.flash.locked 1
+    resetprop ro.boot.veritymode enforcing
+    resetprop ro.boot.warranty_bit 0
+    resetprop ro.warranty_bit 0
+    resetprop ro.debuggable 0
+    resetprop ro.secure 1
+    resetprop ro.build.type user
+    resetprop ro.build.selinux 0
+
+    resetprop ro.adb.secure 1
+    setprop ctl.restart adbd
+fi
+
+setprop ro.product.first_api_level "$vndk"
