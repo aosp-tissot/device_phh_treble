@@ -377,46 +377,6 @@ fi
 mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
 mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
 
-# Set all the correct props and pass safteynet
-copyprop() {
-  p="$(getprop "$2")"
-  [ -n "$p" ] && resetprop "$1" "$(getprop "$2")"
-}
-
-copyprop() {
-  p="$(getprop "$2")"
-  if [ "$p" ]; then
-	resetprop "$1" "$(getprop "$2")"
-  fi
-}
-
-copyprop ro.build.device ro.vendor.build.device
-copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
-copyprop ro.build.fingerprint ro.vendor.build.fingerprint
-copyprop ro.build.device ro.vendor.product.device
-copyprop ro.product.device ro.vendor.product.device
-copyprop ro.product.device ro.product.vendor.device
-copyprop ro.product.name ro.vendor.product.name
-copyprop ro.product.name ro.product.vendor.device
-copyprop ro.product.brand ro.vendor.product.brand
-copyprop ro.product.model ro.vendor.product.model
-copyprop ro.product.model ro.product.vendor.model
-copyprop ro.build.product ro.vendor.product.model
-copyprop ro.build.product ro.product.vendor.model
-copyprop ro.product.manufacturer ro.vendor.product.manufacturer
-copyprop ro.product.manufacturer ro.product.vendor.manufacturer
-resetprop ro.build.tags release-keys
-resetprop ro.boot.vbmeta.device_state locked
-resetprop ro.boot.verifiedbootstate   green
-resetprop ro.boot.flash.locked 1
-resetprop ro.boot.veritymode enforcing
-resetprop ro.boot.warranty_bit 0
-resetprop ro.warranty_bit 0
-resetprop ro.debuggable 0
-resetprop ro.secure 1
-resetprop ro.build.type user
-resetprop ro.build.selinux 0
-
 for f in /vendor/lib{,64}/hw/com.qti.chi.override.so;do
     [ ! -f $f ] && continue
     # shellcheck disable=SC2010
@@ -463,7 +423,6 @@ if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 
 	fi
 fi
 
-if [ -f /system/phh/secure ];then
     copyprop() {
         p="$(getprop "$2")"
         if [ "$p" ]; then
@@ -486,8 +445,10 @@ if [ -f /system/phh/secure ];then
     copyprop ro.build.product ro.product.vendor.model
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.product.manufacturer ro.product.vendor.manufacturer
-    copyprop ro.build.version.security_patch ro.keymaster.xxx.security_patch
-    copyprop ro.build.version.security_patch ro.vendor.build.security_patch
+    copyprop ro.keymaster.xxx.security_patch ro.build.version.security_patch
+    copyprop ro.vendor.build.security_patch ro.build.version.security_patch
+    copyprop ro.system.build.fingerprint  ro.vendor.build.fingerprint
+    copyprop ro.product.system.device ro.vendor.product.device
     resetprop ro.build.tags release-keys
     resetprop ro.boot.vbmeta.device_state locked
     resetprop ro.boot.verifiedbootstate green
@@ -502,6 +463,5 @@ if [ -f /system/phh/secure ];then
 
     resetprop ro.adb.secure 1
     setprop ctl.restart adbd
-fi
 
 setprop ro.product.first_api_level "$vndk"
