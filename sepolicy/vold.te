@@ -1,2 +1,16 @@
 allow vold system_data_file:lnk_file { unlink };
 allow mediaextractor sdcard_type:file read;
+type sysfs_mmcblk, file_type;
+type persist_data_file, file_type;
+type nvcfg_file, file_type;
+type nvdata_file, file_type;
+type protect_f_data_file, file_type;
+type protect_s_data_file, file_type;
+allow vold sysfs_mmcblk:file write;
+allow vold persist_data_file:dir { ioctl open read };
+allow vold kernel:system module_request;
+allow vold nvcfg_file:dir { ioctl open read };
+allow vold nvdata_file:dir { open read };
+allow vold protect_f_data_file:dir { open read };
+allow vold protect_s_data_file:dir { ioctl open read };
+

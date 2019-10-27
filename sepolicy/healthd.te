@@ -1,0 +1,1 @@
+allow healthd self:capability net_admin;

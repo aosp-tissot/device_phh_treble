@@ -1,0 +1,4 @@
+type mnld, file_type;
+allow mnld system_data_file:dir write;
+allow mnld system_data_file:sock_file { getattr write };
+

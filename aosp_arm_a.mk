@@ -1,6 +1,6 @@
 TARGET_GAPPS_ARCH := arm
 $(call inherit-product, device/phh/treble/base-pre.mk)
-include build/make/target/product/treble_common.mk
+include build/make/target/product/legacy_gsi_common.mk
 $(call inherit-product, vendor/vndk/vndk.mk)
 $(call inherit-product, device/phh/treble/base.mk)
 

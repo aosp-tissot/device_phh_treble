@@ -1,0 +1,7 @@
+type proc_bootprof, file_type;
+type ccci_mdinit, file_type;
+allow ccci_mdinit proc_bootprof:file { open read write };
+allow ccci_mdinit proc_cmdline:file { getattr open read };
+allow ccci_mdinit sysfs_dt_firmware_android:dir search;
+allow ccci_mdinit sysfs_dt_firmware_android:file read;
+

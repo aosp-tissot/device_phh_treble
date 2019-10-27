@@ -1,0 +1,10 @@
+type logmuch_data_file, file_type;
+type nfc_socket, file_type;
+allow vendor_init dhcp_data_file:dir setattr;
+allow vendor_init drm_data_file:dir { add_name create setattr write };
+allow vendor_init logmuch_data_file:dir { create setattr };
+allow vendor_init nfc_socket:dir { create setattr search };
+allow vendor_init system_data_file:dir { add_name create setattr write };
+allow vendor_init wifi_data_file:dir { setattr search };
+allow vendor_init wpa_socket:dir setattr;
+
