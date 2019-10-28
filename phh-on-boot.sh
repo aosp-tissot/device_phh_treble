@@ -37,3 +37,14 @@ getprop | \
     while read -r svc ;do
         setprop ctl.stop "$svc"
     done
+
+copyprop() {
+    p="$(getprop "$2")"
+    if [ "$p" ]; then
+        resetprop "$1" "$(getprop "$2")"
+    fi
+}
+
+sleep 30
+copyprop ro.keymaster.xxx.security_patch ro.vendor.build.security_patch
+copyprop ro.build.version.security_patch ro.vendor.build.security_patch

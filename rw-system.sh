@@ -445,17 +445,17 @@ fi
     copyprop ro.product.device ro.product.vendor.device
     copyprop ro.product.name ro.vendor.product.name
     copyprop ro.product.name ro.product.vendor.device
+    copyprop ro.product.system.name ro.product.vendor.name
     copyprop ro.product.brand ro.vendor.product.brand
     copyprop ro.product.model ro.vendor.product.model
     copyprop ro.product.model ro.product.vendor.model
     copyprop ro.build.product ro.vendor.product.model
     copyprop ro.build.product ro.product.vendor.model
+    copyprop ro.product.system.model ro.product.vendor.model
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.product.manufacturer ro.product.vendor.manufacturer
-    copyprop ro.keymaster.xxx.security_patch ro.build.version.security_patch
-    copyprop ro.vendor.build.security_patch ro.build.version.security_patch
-    copyprop ro.system.build.fingerprint  ro.vendor.build.fingerprint
-    copyprop ro.product.system.device ro.vendor.product.device
+    copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
+    copyprop ro.product.system.device ro.product.vendor.device
     resetprop ro.build.tags release-keys
     resetprop ro.boot.vbmeta.device_state locked
     resetprop ro.boot.verifiedbootstate green
