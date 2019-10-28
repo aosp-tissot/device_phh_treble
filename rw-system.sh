@@ -379,10 +379,10 @@ if ! grep android.hardware.ir /vendor/manifest.xml;then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.consumerir.xml
 fi
 
-#Disable trustkernel keystore, because it doesn't work for the moment
-#Found on MTK devices
-mount -o bind /system/phh/empty /vendor/lib/hw/keystore.trustkernel.so || true
-mount -o bind /system/phh/empty /vendor/lib64/hw/keystore.trustkernel.so || true
+# Disable HW Encryption on Doogee Y8 for now
+if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^DOOGEE/Y8'; then
+   for i in /vendor/lib/hw/keystore* /vendor/lib64/hw/keystore*;do mount /system/phh/empty $i;done
+fi
 
 for f in /vendor/lib{,64}/hw/com.qti.chi.override.so;do
     [ ! -f $f ] && continue
