@@ -684,21 +684,17 @@ if [ -f /system/phh/secure ];then
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
     copyprop ro.product.manufacturer ro.product.vendor.manufacturer
-    (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
-        [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
-    done
-
-    resetprop_phh ro.build.tags release-keys
-    resetprop_phh ro.boot.vbmeta.device_state locked
-    resetprop_phh ro.boot.verifiedbootstate green
-    resetprop_phh ro.boot.flash.locked 1
-    resetprop_phh ro.boot.veritymode enforcing
-    resetprop_phh ro.boot.warranty_bit 0
-    resetprop_phh ro.warranty_bit 0
-    resetprop_phh ro.debuggable 0
-    resetprop_phh ro.secure 1
-    resetprop_phh ro.build.type user
-    resetprop_phh ro.build.selinux 0
+    resetprop ro.build.tags release-keys
+    resetprop ro.boot.vbmeta.device_state locked
+    resetprop ro.boot.verifiedbootstate green
+    resetprop ro.boot.flash.locked 1
+    resetprop ro.boot.veritymode enforcing
+    resetprop ro.boot.warranty_bit 0
+    resetprop ro.warranty_bit 0
+    resetprop ro.debuggable 0
+    resetprop ro.secure 1
+    resetprop ro.build.type user
+    resetprop ro.build.selinux 0
 
     resetprop_phh ro.adb.secure 1
     setprop ctl.restart adbd

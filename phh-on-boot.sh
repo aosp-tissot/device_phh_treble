@@ -60,3 +60,15 @@ getprop | \
     while read -r svc ;do
         setprop ctl.stop "$svc"
     done
+
+copyprop() {
+    p="$(getprop "$2")"
+    if [ "$p" ]; then
+        resetprop "$1" "$(getprop "$2")"
+    fi
+}
+
+sleep 30
+    (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
+        [ -n "$v" ] && resetprop ro.build.version.security_patch "$v"
+    done
