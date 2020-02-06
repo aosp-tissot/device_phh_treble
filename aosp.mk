@@ -1,14 +1,15 @@
 TARGET_BOOT_ANIMATION_RES := 1080
 IS_GENERIC_SYSTEM_IMAGE := true
 
+ifneq ($(wildcard vendor/opengapps),)
 PRODUCT_COPY_FILES += \
-	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera2.xml \
-	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2015.xml \
-	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2016.xml \
-	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2017.xml \
-	device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2018.xml
+        device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera2.xml \
+        device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2015.xml \
+        device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2016.xml \
+        device/phh/treble/empty-permission.xml:system/etc/permissions/com.google.android.camera.experimental2017.xml
 
 DEVICE_PACKAGE_OVERLAYS += device/phh/treble/overlay-gapps
+GAPPS_VARIANT := pico
 DONT_DEXPREOPT_PREBUILTS := true
 WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := true
 GAPPS_FORCE_PACKAGE_OVERRIDES := true
@@ -22,5 +23,14 @@ PRODUCT_PACKAGES += \
        LatinImeGoogle \
        phh-overrides
 
-# $(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
-$(call inherit-product,  vendor/gapps/config.mk)
+$(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
+endif
+
+#Pixel Experience gapps
+ifneq ($(wildcard vendor/gapps),)
+IS_PHONE := true
+$(call inherit-product,vendor/gapps/config.mk)
+PRODUCT_PACKAGES += \
+       phh-overrides
+endif
+

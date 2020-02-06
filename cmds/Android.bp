@@ -101,6 +101,18 @@ cc_binary {
 }
 
 cc_binary {
+	name: "lightsctl-seh",
+	srcs: [
+		"lightsctl-seh.cpp",
+	],
+	shared_libs: [
+		"vendor.samsung.hardware.light@3.0",
+		"libutils",
+		"libhidlbase",
+	],
+}
+
+cc_binary {
 	name: "xiaomi-motor",
 	srcs: [
 		"xiaomi-motor.cpp",
@@ -156,5 +168,17 @@ cc_binary {
 	name: "asus-motor",
 	srcs: [
 		"asus-motor.cpp",
+	],
+}
+
+cc_binary {
+	name: "goodix-fp",
+	srcs: [
+		"goodix-fp.cpp",
+	],
+	shared_libs: [
+		"vendor.goodix.extend.service@2.0",
+		"libutils",
+		"libhidlbase",
 	],
 }

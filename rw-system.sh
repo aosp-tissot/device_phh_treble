@@ -66,6 +66,11 @@ fixSPL() {
 changeKeylayout() {
     cp -a /system/usr/keylayout /mnt/phh/keylayout
     changed=false
+    if grep -q vendor.huawei.hardware.biometrics.fingerprint /vendor/etc/vintf/manifest.xml; then
+        changed=true
+        cp /system/phh/huawei/fingerprint.kl /mnt/phh/keylayout/fingerprint.kl
+        chmod 0644 /mnt/phh/keylayout/fingerprint.kl
+    fi
 
     if getprop ro.vendor.build.fingerprint |
         grep -qE -e "^samsung"; then
@@ -81,7 +86,7 @@ changeKeylayout() {
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
         -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
-        -e xiaomi/whyred -e xiaomi/tulip; then
+        -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -115,6 +120,12 @@ changeKeylayout() {
     if getprop ro.vendor.build.fingerprint |grep -iq -E -e '^Nokia/Panther';then
         cp /system/phh/nokia-soc_gpio_keys.kl /mnt/phh/keylayout/soc_gpio_keys.kl
         chmod 0644 /mnt/phh/keylayout/soc_gpio_keys.kl
+        changed=true
+    fi
+
+    if getprop ro.vendor.build.fingerprint |grep -iq -E -e '^Lenovo/' && [ -f /sys/devices/virtual/touch/tp_dev/gesture_on ];then
+        cp /system/phh/lenovo-synaptics_dsx.kl /mnt/phh/keylayout/synaptics_dsx.kl
+        chmod 0644 /mnt/phh/keylayout/synaptics_dsx.kl
         changed=true
     fi
 
@@ -199,6 +210,12 @@ if getprop ro.vendor.build.fingerprint | grep -qE 'Sony/'; then
     setprop persist.sys.qcom-brightness -1
 fi
 
+# Xiaomi MiA3 uses OLED display which works best with this setting
+if getprop ro.vendor.build.fingerprint | grep -iq \
+    -e iaomi/laurel_sprout;then
+    setprop persist.sys.qcom-brightness -1
+fi
+
 if getprop ro.vendor.build.fingerprint | grep -qi oneplus/oneplus6/oneplus6; then
     resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
 fi
@@ -223,7 +240,8 @@ fi
 if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
-    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip -e xiaomi/lavender; then
+    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip \
+    -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine; then
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
@@ -237,7 +255,8 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
     -e iaomi/equuleus/equuleus -e motorola/nora -e xiaomi/nitrogen \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e iaomi/cepheus \
-    -e iaomi/grus -e xiaomi/cereus -e iaomi/raphael;then
+    -e iaomi/grus -e xiaomi/cereus -e iaomi/raphael -e iaomi/davinci \
+    -e iaomi/ginkgo -e iaomi/laurel_sprout;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
@@ -298,6 +317,10 @@ if grep -qF 'PowerVR Rogue GE8100' /vendor/lib/egl/GLESv1_CM_mtk.so ||
 
     setprop debug.hwui.renderer opengl
     setprop ro.skia.ignore_swizzle true
+    if [ "$vndk" = 26 ] || [ "$vndk" = 27 ];then
+       setprop debug.hwui.use_buffer_age false
+
+    fi
 fi
 
 #If we have both Samsung and AOSP power hal, take Samsung's
@@ -319,6 +342,15 @@ fi
 
 if getprop ro.product.model | grep -qF ANE; then
     setprop debug.sf.latch_unsignaled 1
+fi
+        
+if getprop ro.vendor.product.device | grep -q -e nora -e rhannah; then
+    setprop debug.sf.latch_unsignaled 1
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/daisy; then
+    setprop debug.sf.latch_unsignaled 1
+    setprop debug.sf.enable_hwc_vds 1
 fi
 
 if getprop ro.vendor.build.fingerprint | grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei | grep -iq -E -e 'true'; then
@@ -368,7 +400,7 @@ if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung'; then
     fi
 fi
 
-if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/(daisy|wayne)/(daisy|wayne).*'; then
+if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/wayne/wayne.*'; then
     # Fix camera on DND, ugly workaround but meh
     setprop audio.camerasound.force true
 fi
@@ -438,21 +470,29 @@ fi
     }
 
     copyprop ro.build.device ro.vendor.build.device
+    copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
     copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
     copyprop ro.build.fingerprint ro.vendor.build.fingerprint
     copyprop ro.build.device ro.vendor.product.device
+    copyprop ro.product.system.device ro.vendor.product.device
     copyprop ro.product.device ro.vendor.product.device
+    copyprop ro.product.system.device ro.product.vendor.device
     copyprop ro.product.device ro.product.vendor.device
+    copyprop ro.product.system.name ro.vendor.product.name
     copyprop ro.product.name ro.vendor.product.name
+    copyprop ro.product.system.name ro.product.vendor.device
     copyprop ro.product.name ro.product.vendor.device
     copyprop ro.product.system.name ro.product.vendor.name
     copyprop ro.product.brand ro.vendor.product.brand
+    copyprop ro.product.system.model ro.vendor.product.model
     copyprop ro.product.model ro.vendor.product.model
+    copyprop ro.product.system.model ro.product.vendor.model
     copyprop ro.product.model ro.product.vendor.model
     copyprop ro.build.product ro.vendor.product.model
     copyprop ro.build.product ro.product.vendor.model
     copyprop ro.product.system.model ro.product.vendor.model
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
+    copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
     copyprop ro.product.manufacturer ro.product.vendor.manufacturer
     copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
     copyprop ro.product.system.device ro.product.vendor.device
@@ -471,4 +511,75 @@ fi
     resetprop ro.adb.secure 1
     setprop ctl.restart adbd
 
+for abi in "" 64;do
+    f=/vendor/lib$abi/libstagefright_foundation.so
+    if [ -f "$f" ];then
+        for vndk in 26 27 28;do
+            mount "$f" /system/lib$abi/vndk-$vndk/libstagefright_foundation.so
+        done
+    fi
+done
+
 setprop ro.product.first_api_level "$vndk"
+
+if getprop ro.boot.boot_devices |grep -v , |grep -qE .;then
+    ln -s /dev/block/platform/$(getprop ro.boot.boot_devices) /dev/block/bootdevice
+fi
+
+if [ -c /dev/dsm ];then
+    chown system:system /dev/dsm
+    chmod 0660 /dev/dsm
+    mkdir -p /data/sec_storage_data
+    chown system:system /data/sec_storage_data
+    chcon u:object_r:teecd_data_file_system:s0 /data/sec_storage_data
+    mount /data/sec_storage_data /sec_storage
+fi
+
+#Try to detect DT2W
+for ev in $(cd /sys/class/input;echo event*);do
+	if [ -f "/sys/class/input/$ev/device/device/gesture_mask" ];then
+		setprop persist.sys.phh.dt2w_evnode /dev/input/$ev
+	fi
+done
+
+has_hostapd=false
+for i in odm oem vendor product;do
+    if grep -qF android.hardware.wifi.hostapd /$i/etc/vintf/manifest.xml;then
+        has_hostapd=true
+    fi
+done
+
+if [ "$has_hostapd" = false ];then
+    setprop persist.sys.phh.system_hostapd true
+fi
+
+#Weird /odm/phone.prop Huawei stuff
+HW_PRODID="$(sed -nE 's/.*productid=([0-9xa-f]*).*/\1/p' /proc/cmdline)"
+[ -z "$HW_PRODID" ] && HW_PRODID="0x$(od -A none -t x1 /sys/firmware/devicetree/base/hisi,modem_id | sed s/' '//g)"
+for part in odm vendor;do
+    if [ -f /$part/phone.prop ];then
+        if [ -n "$HW_PRODID" ];then
+            eval "$(awk 'BEGIN { a=0 }; /\[.*\].*/ { a=0 }; tolower($0) ~ /.*'"$HW_PRODID"'.*/ { a=1 }; /.*=.*/ { if(a == 1) print $0 }' /$part/phone.prop |sed -nE 's/(.*)=(.*)/setprop \1 "\2";/p')"
+        fi
+    fi
+done
+
+# Fix sprd adf for surfaceflinger to start
+# Somehow the names of the device nodes are incorrect on Android 10; fix them by mknod
+if [ -e /dev/sprd-adf-dev ];then
+    mknod -m666 /dev/adf0 c 250 0
+    mknod -m666 /dev/adf-interface0.0 c 250 1
+    mknod -m666 /dev/adf-overlay-engine0.0 c 250 2
+    restorecon /dev/adf0 /dev/adf-interface0.0 /dev/adf-overlay-engine0.0
+
+    # SPRD GL causes crashes in system_server (not currently observed in other processes)
+    # Tell the system to avoid using hardware acceleration in system_server.
+    setprop ro.config.avoid_gfx_accel true
+fi
+
+# Fix manual network selection with old modem
+# https://github.com/LineageOS/android_hardware_ril/commit/e3d006fa722c02fc26acdfcaa43a3f3a1378eba9
+if getprop ro.vendor.build.fingerprint | grep -iq \
+    -e xiaomi/polaris -e xiaomi/whyred; then
+    setprop persist.sys.phh.radio.use_old_mnc_format true
+fi

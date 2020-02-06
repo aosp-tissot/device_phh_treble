@@ -96,6 +96,7 @@ PRODUCT_PACKAGES += \
 endif
 
 PRODUCT_PACKAGES += \
+	android.hidl.manager-V1.0-java \
 	android.hardware.wifi.hostapd-V1.0-java \
 	vendor.huawei.hardware.biometrics.fingerprint-V2.1-java \
 	vendor.huawei.hardware.tp-V1.0-java \
@@ -113,7 +114,8 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/files/samsung-sec_e-pen.idc:system/usr/idc/sec_e-pen.idc \
 	device/phh/treble/files/samsung-9810-floating_feature.xml:system/ph/sam-9810-flo_feat.xml \
 	device/phh/treble/files/mimix3-gpio-keys.kl:system/phh/mimix3-gpio-keys.kl \
-	device/phh/treble/files/nokia-soc_gpio_keys.kl:system/phh/nokia-soc_gpio_keys.kl
+	device/phh/treble/files/nokia-soc_gpio_keys.kl:system/phh/nokia-soc_gpio_keys.kl \
+	device/phh/treble/files/lenovo-synaptics_dsx.kl:system/phh/lenovo-synaptics_dsx.kl
 
 SELINUX_IGNORE_NEVERALLOWS := true
 
