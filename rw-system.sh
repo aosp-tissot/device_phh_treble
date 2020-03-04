@@ -84,7 +84,7 @@ changeKeylayout() {
     if getprop ro.vendor.build.fingerprint | grep -iq \
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
-        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
+        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
@@ -126,6 +126,18 @@ changeKeylayout() {
     if getprop ro.vendor.build.fingerprint |grep -iq -E -e '^Lenovo/' && [ -f /sys/devices/virtual/touch/tp_dev/gesture_on ];then
         cp /system/phh/lenovo-synaptics_dsx.kl /mnt/phh/keylayout/synaptics_dsx.kl
         chmod 0644 /mnt/phh/keylayout/synaptics_dsx.kl
+        changed=true
+    fi
+
+    if getprop ro.build.overlay.deviceid |grep -q -e RMX1931 -e CPH1859 -e CPH1861;then
+        cp /system/phh/oppo-touchpanel.kl /mnt/phh/keylayout/touchpanel.kl
+        chmod 0644 /mnt/phh/keylayout/touchpanel.kl
+        changed=true
+    fi
+
+    if getprop ro.vendor.build.fingerprint |grep -q -e google/;then
+        cp /system/phh/google-uinput-fpc.kl /mnt/phh/keylayout/uinput-fpc.kl
+        chmod 0644 /mnt/phh/keylayout/uinput-fpc.kl
         changed=true
     fi
 
@@ -177,6 +189,16 @@ elif mount -o remount,rw /; then
 fi
 mount -o remount,ro /system || true
 mount -o remount,ro / || true
+
+for part in /dev/block/bootdevice/by-name/oppodycnvbk  /dev/block/platform/bootdevice/by-name/nvdata;do
+    if [ -b "$part" ];then
+        oppoName="$(grep -aohE '(RMX|CPH)[0-9]{4}' "$part")"
+        if [ -n "$oppoName" ];then
+            setprop ro.build.overlay.deviceid "$oppoName"
+        fi
+    fi
+done
+
 
 mkdir -p /mnt/phh/
 mount -t tmpfs -o rw,nodev,relatime,mode=755,gid=0 none /mnt/phh || true
@@ -240,12 +262,16 @@ fi
 if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
-    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip \
+    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip -e Redmi/begonia\
     -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine; then
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
 if getprop ro.vendor.product.device |grep -iq -e RMX1801 -e RMX1803 -e RMX1807;then	
+    setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
+fi
+
+if getprop ro.build.overlay.deviceid |grep -q -e CPH1859 -e CPH1861;then	
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
@@ -308,6 +334,18 @@ for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.
     setprop persist.sys.radio.ussd.fix true
 done
 
+if getprop ro.vendor.build.fingerprint | grep -iq -e iaomi/cactus -e iaomi/cereus; then
+    setprop debug.stagefright.omx_default_rank.sw-audio 1
+    setprop debug.stagefright.omx_default_rank 0
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/ginkgo -e  xiaomi/willow; then
+    mount -o bind /system/phh/empty /vendor/lib/soundfx/libvolumelistener.so
+fi
+
+mount -o bind /system/phh/empty /vendor/lib/libpdx_default_transport.so
+mount -o bind /system/phh/empty /vendor/lib64/libpdx_default_transport.so
+
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkTheme.apk || true
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkThemeOverlay.apk || true
 
@@ -336,7 +374,7 @@ if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex | grep -qF -e Landro
     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
 fi
 
-if getprop ro.hardware | grep -qF samsungexynos; then
+if getprop ro.hardware | grep -qF samsungexynos -e exynos; then
     setprop debug.sf.latch_unsignaled 1
 fi
 
@@ -425,11 +463,13 @@ for f in /vendor/lib{,64}/hw/com.qti.chi.override.so;do
     cp -a "$f" "/mnt/phh/$b"
     sed -i \
         -e 's/ro.product.manufacturer/sys.phh.xx.manufacturer/g' \
+        -e 's/ro.product.brand/sys.phh.xx.brand/g' \
         "/mnt/phh/$b"
     chcon "$ctxt" "/mnt/phh/$b"
     mount -o bind "/mnt/phh/$b" "$f"
 
     setprop sys.phh.xx.manufacturer "$(getprop ro.product.vendor.manufacturer)"
+    setprop sys.phh.xx.brand "$(getprop ro.product.vendor.brand)"
 done
 
 if [ -n "$(getprop ro.boot.product.hardware.sku)" ] && [ -z "$(getprop ro.hw.oemName)" ];then
@@ -582,4 +622,9 @@ fi
 if getprop ro.vendor.build.fingerprint | grep -iq \
     -e xiaomi/polaris -e xiaomi/whyred; then
     setprop persist.sys.phh.radio.use_old_mnc_format true
+fi
+
+if getprop ro.build.overlay.deviceid |grep -E '^RMX';then
+    setprop oppo.camera.packname com.oppo.camera
+    setprop sys.phh.xx.brand realme
 fi
