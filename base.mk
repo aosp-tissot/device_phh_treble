@@ -2,6 +2,7 @@
 PRODUCT_COPY_FILES := \
 	frameworks/native/data/etc/android.hardware.fingerprint.xml:system/etc/permissions/android.hardware.fingerprint.xml \
 	frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
+	frameworks/native/data/etc/android.hardware.telephony.ims.xml:system/etc/permissions/android.hardware.telephony.ims.xml \
 	frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
 	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
 
@@ -62,6 +63,8 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/rw-system.sh:system/bin/rw-system.sh \
+	device/phh/treble/phh-on-data.sh:system/bin/phh-on-data.sh \
+	device/phh/treble/phh-prop-handler.sh:system/bin/phh-prop-handler.sh \
 	device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
 
 PRODUCT_COPY_FILES += \
@@ -142,7 +145,8 @@ PRODUCT_PACKAGES += \
 
 # Helper to debug Xiaomi motorized camera
 PRODUCT_PACKAGES += \
-	xiaomi-motor
+	xiaomi-motor \
+	oneplus-motor
 
 PRODUCT_PACKAGES += \
 	Stk
@@ -171,3 +175,9 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/remote/phh-remotectl.rc:system/etc/init/phh-remotectl.rc \
 	device/phh/treble/remote/phh-remotectl.sh:system/bin/phh-remotectl.sh \
 
+PRODUCT_PACKAGES += \
+	android.hardware.biometrics.fingerprint@2.1-service.oppo.compat \
+
+
+PRODUCT_PACKAGES += \
+	vr_hwc
