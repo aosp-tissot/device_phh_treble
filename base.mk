@@ -90,7 +90,8 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/twrp/busybox-armv7l:system/bin/busybox_phh
 
 PRODUCT_PACKAGES += \
-    simg2img_simple
+    simg2img_simple \
+    lptools
 
 ifneq (,$(wildcard external/exfat))
 PRODUCT_PACKAGES += \
@@ -121,6 +122,9 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/files/lenovo-synaptics_dsx.kl:system/phh/lenovo-synaptics_dsx.kl \
 	device/phh/treble/files/oppo-touchpanel.kl:system/phh/oppo-touchpanel.kl \
 	device/phh/treble/files/google-uinput-fpc.kl:system/phh/google-uinput-fpc.kl \
+	device/phh/treble/files/daisy-buttonJack.kl:system/phh/daisy-buttonJack.kl \
+	device/phh/treble/files/daisy-uinput-fpc.kl:system/phh/daisy-uinput-fpc.kl \
+	device/phh/treble/files/daisy-uinput-goodix.kl:system/phh/daisy-uinput-goodix.kl
 
 SELINUX_IGNORE_NEVERALLOWS := true
 
@@ -155,6 +159,9 @@ PRODUCT_PACKAGES += \
 	resetprop
 PRODUCT_COPY_FILES += \
 	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
+
+PRODUCT_COPY_FILES += \
+	device/phh/treble/remove-telephony.sh:system/bin/remove-telephony.sh \
 
 PRODUCT_COPY_FILES += \
 	frameworks/native/data/etc/android.software.secure_lock_screen.xml:system/etc/permissions/android.software.secure_lock_screen.xml \

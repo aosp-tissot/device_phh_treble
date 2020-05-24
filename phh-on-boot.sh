@@ -29,6 +29,8 @@ if find /sys/firmware -name support_fod |grep -qE .;then
 	setprop ctl.restart vendor.fps_hal
 fi
 
+setprop ctl.stop storageproxyd
+
 #Clear looping services
 sleep 30
 getprop | \
@@ -46,5 +48,5 @@ copyprop() {
 }
 
 sleep 30
-copyprop ro.keymaster.xxx.security_patch ro.vendor.build.security_patch
-copyprop ro.build.version.security_patch ro.vendor.build.security_patch
+#copyprop ro.keymaster.xxx.security_patch ro.vendor.build.security_patch
+#copyprop ro.build.version.security_patch ro.vendor.build.security_patch
