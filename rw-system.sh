@@ -62,6 +62,10 @@ fi
 setprop sys.usb.ffs.aio_compat true
 setprop persist.adb.nonblocking_ffs false
 
+if getprop ro.vendor.build.fingerprint |grep -iq  -e Redmi/curtana_global;then
+    setprop persist.sys.phh.disable_a2dp_offload true
+fi
+
 fixSPL() {
     if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
         setprop ro.keymaster.mod 'AOSP on ARM32'
@@ -689,6 +693,8 @@ if [ -f /system/phh/secure ];then
     copyprop ro.product.model ro.product.vendor.model
     copyprop ro.build.product ro.vendor.product.model
     copyprop ro.build.product ro.product.vendor.model
+    copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
+    copyprop ro.product.system.device ro.product.vendor.device
     copyprop ro.system.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
@@ -707,7 +713,6 @@ if [ -f /system/phh/secure ];then
 
     resetprop_phh ro.adb.secure 1
     setprop ctl.restart adbd
-fi
 
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
