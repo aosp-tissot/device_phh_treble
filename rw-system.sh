@@ -16,6 +16,10 @@ fi
 setprop sys.usb.ffs.aio_compat true
 setprop persist.adb.nonblocking_ffs false
 
+if getprop ro.vendor.build.fingerprint |grep -iq  -e Redmi/curtana_global;then
+    setprop persist.sys.phh.disable_a2dp_offload true
+fi
+
 fixSPL() {
     if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
         setprop ro.keymaster.mod 'AOSP on ARM32'
@@ -89,7 +93,7 @@ changeKeylayout() {
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
-        -e xiaomi/curtana; then
+        -e Redmi/curtana_global; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -287,7 +291,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e xiaomi/cepheus \
     -e xiaomi/grus -e xiaomi/cereus -e xiaomi/cactus -e xiaomi/raphael -e xiaomi/davinci \
     -e xiaomi/ginkgo -e xiaomi/laurel_sprout -e xiaomi/andromeda \
-    -e xiaomi/curtana ; then
+    -e Redmi/curtana_global ; then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
@@ -521,7 +525,6 @@ if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 
     fi
 fi
 
-if [ -f /system/phh/secure ];then
     copyprop() {
         p="$(getprop "$2")"
         if [ "$p" ]; then
@@ -550,6 +553,8 @@ if [ -f /system/phh/secure ];then
     copyprop ro.product.model ro.product.vendor.model
     copyprop ro.build.product ro.vendor.product.model
     copyprop ro.build.product ro.product.vendor.model
+    copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
+    copyprop ro.product.system.device ro.product.vendor.device
     copyprop ro.system.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
@@ -568,7 +573,6 @@ if [ -f /system/phh/secure ];then
 
     resetprop ro.adb.secure 1
     setprop ctl.restart adbd
-fi
 
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
@@ -729,5 +733,3 @@ if getprop ro.build.overlay.deviceid |grep -iq -e RMX1941 -e RMX1945 -e RMX1943 
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
     setprop persist.sys.phh.mainkeys 0
 fi
-
-resetprop ro.bluetooth.library_name libbluetooth.so
