@@ -37,17 +37,10 @@ include $(BUILD_PREBUILT)
 include $(CLEAR_VARS)
 LOCAL_MODULE := phh-gapps-overrides
 PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
-	Drive \
 	YTMusic \
 	Videos \
-	Duo \
 	Traceur \
 	Wellbeing \
-	YouTube \
-	Photos \
-	Maps \
-	Gmail2 \
-	FilesGoogle \
 	GmsSampleIntegration \
 	GmsSampleIntegrationGo \
 	GmsSampleIntegrationGo2GB \
