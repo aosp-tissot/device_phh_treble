@@ -37,10 +37,8 @@ include $(BUILD_PREBUILT)
 include $(CLEAR_VARS)
 LOCAL_MODULE := phh-gapps-overrides
 PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
-	Drive \
 	YTMusic \
 	Videos \
-	Duo \
 	Traceur \
 	Wellbeing \
 	YouTube \
