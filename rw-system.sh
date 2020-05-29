@@ -735,3 +735,13 @@ if getprop ro.build.overlay.deviceid |grep -iq -e RMX1941 -e RMX1945 -e RMX1943 
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
     setprop persist.sys.phh.mainkeys 0
 fi
+
+resetprop ro.bluetooth.library_name libbluetooth.so
+
+if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
+    setprop ro.netflix.bsp_rev Q855-16947-1
+fi
+
+if getprop ro.vendor.build.fingerprint |grep -qi redmi/curtana;then
+    setprop ro.netflix.bsp_rev Q6250-19132-1
+fi
