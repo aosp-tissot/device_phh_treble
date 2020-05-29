@@ -64,6 +64,11 @@ setprop persist.adb.nonblocking_ffs false
 
 if getprop ro.vendor.build.fingerprint |grep -iq  -e Redmi/curtana_global;then
     setprop persist.sys.phh.disable_a2dp_offload true
+    setprop persist.bluetooth.bluetooth_audio_hal.disabled true
+    setprop persist.sys.phh.caf.audio_policy 1
+    mount -o bind /system/etc/mixer_paths_wcd937x.xml /vendor/etc/mixer_paths_wcd937x.xml
+    setprop ctl.restart vendor.audio-hal-2-0
+    pkill -f com.android.bluetooth
 fi
 
 fixSPL() {
@@ -894,7 +899,7 @@ fi
 resetprop_phh ro.bluetooth.library_name libbluetooth.so
 
 if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
-    setprop ro.netflix.bsp_rev Q855-16947-1
+    setprop ro.netflix.bsp_rev Q855-16947-1	    setprop ro.netflix.bsp_rev Q855-16947-1
 fi
 
 if getprop ro.vendor.build.fingerprint |grep -qi redmi/curtana;then
