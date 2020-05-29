@@ -19,3 +19,5 @@
 /efs u:object_r:efs_file:s0
 
 /dev/smcinvoke u:object_r:smcinvoke_device:s0
+
+/system/etc/mixer_paths_wcd937x.xml        u:object_r:vendor_configs_file:s0
