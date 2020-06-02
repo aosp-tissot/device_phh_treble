@@ -2996,14 +2996,14 @@
     <!--  2019.12.17 longcheer chenqiang add for ce mode start-->
     <path name="headphones-ce">
         <path name="headphones" />
-        <ctl name="RX_RX0 Digital Volume" value="90" />
-        <ctl name="RX_RX1 Digital Volume" value="90" />
+        <ctl name="RX_RX0 Digital Volume" value="86" />
+        <ctl name="RX_RX1 Digital Volume" value="86" />
     </path>
 
     <path name="headphones-no-ce">
         <path name="headphones" />
-        <ctl name="RX_RX0 Digital Volume" value="100" />
-        <ctl name="RX_RX1 Digital Volume" value="100" />
+        <ctl name="RX_RX0 Digital Volume" value="96" />
+        <ctl name="RX_RX1 Digital Volume" value="96" />
     </path>
     <!--  2019.12.17 longcheer chenqiang add for ce mode end-->
 
