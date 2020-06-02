@@ -16,12 +16,15 @@ fi
 setprop sys.usb.ffs.aio_compat true
 setprop persist.adb.nonblocking_ffs false
 
-if getprop ro.vendor.build.fingerprint |grep -iq  -e Redmi/curtana_global;then
-    setprop persist.sys.phh.disable_a2dp_offload true
-    setprop persist.bluetooth.bluetooth_audio_hal.disabled true
-    setprop persist.sys.phh.caf.audio_policy 1
+if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
+    -e redmi/joyeuse;then
+    resetprop persist.sys.phh.disable_a2dp_offload true
+    resetprop persist.bluetooth.bluetooth_audio_hal.disabled true
+    resetprop persist.sys.phh.caf.audio_policy 1
     mount -o bind /system/etc/mixer_paths_wcd937x.xml /vendor/etc/mixer_paths_wcd937x.xml
-    setprop ctl.restart vendor.audio-hal-2-0
+    mount -o bind /system/etc/media_profiles_vendor.xml /vendor/etc/media_profiles_vendor.xml
+    resetprop ctl.restart vendor.audio-hal-2-0
+    resetprop persist.sys.phh.linear_brightness true
     pkill -f com.android.bluetooth
 fi
 
@@ -98,8 +101,7 @@ changeKeylayout() {
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
-        -e Redmi/curtana_global \
-        -e redmi/curtana; then
+        -e redmi/curtana -e redmi/joyeuse; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -297,8 +299,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e xiaomi/cepheus \
     -e xiaomi/grus -e xiaomi/cereus -e xiaomi/cactus -e xiaomi/raphael -e xiaomi/davinci \
     -e xiaomi/ginkgo -e xiaomi/laurel_sprout -e xiaomi/andromeda \
-    -e Redmi/curtana_global \
-    -e redmi/curtana ; then
+    -e redmi/curtana -e redmi/joyeuse; then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
@@ -747,6 +748,6 @@ if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
     setprop ro.netflix.bsp_rev Q855-16947-1	    setprop ro.netflix.bsp_rev Q855-16947-1
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -qi redmi/curtana;then
+if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeuse;then
     setprop ro.netflix.bsp_rev Q6250-19132-1
 fi

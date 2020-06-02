@@ -22,12 +22,9 @@ PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
 	YTMusic \
 	Videos \
 	Traceur \
-	Wellbeing \
-	YouTube \
-	Photos \
-	Maps \
-	Gmail2 \
-	Velvet \
+	CalendarGoogle \
+	FilesGoogle \
+	AssistantShell \
 	GmsSampleIntegration \
 	GmsSampleIntegrationGo \
 	GmsSampleIntegrationGo2GB \
