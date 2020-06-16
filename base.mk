@@ -118,6 +118,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
 	device/phh/treble/files/samsung-gpio_keys.kl:system/phh/samsung-gpio_keys.kl \
 	device/phh/treble/files/samsung-sec_touchscreen.kl:system/phh/samsung-sec_touchscreen.kl \
+	device/phh/treble/files/samsung-sec_touchkey.kl:system/phh/samsung-sec_touchkey.kl \
 	device/phh/treble/files/oneplus6-synaptics_s3320.kl:system/phh/oneplus6-synaptics_s3320.kl \
 	device/phh/treble/files/huawei-fingerprint.kl:system/phh/huawei/fingerprint.kl \
 	device/phh/treble/files/samsung-sec_e-pen.idc:system/usr/idc/sec_e-pen.idc \
@@ -127,6 +128,7 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/files/lenovo-synaptics_dsx.kl:system/phh/lenovo-synaptics_dsx.kl \
 	device/phh/treble/files/oppo-touchpanel.kl:system/phh/oppo-touchpanel.kl \
 	device/phh/treble/files/google-uinput-fpc.kl:system/phh/google-uinput-fpc.kl \
+	device/phh/treble/files/moto-uinput-egis.kl:system/phh/moto-uinput-egis.kl \
 	device/phh/treble/files/daisy-buttonJack.kl:system/phh/daisy-buttonJack.kl \
 	device/phh/treble/files/daisy-uinput-fpc.kl:system/phh/daisy-uinput-fpc.kl \
 	device/phh/treble/files/daisy-uinput-goodix.kl:system/phh/daisy-uinput-goodix.kl
@@ -160,6 +162,7 @@ PRODUCT_PACKAGES += \
 	resetprop
 PRODUCT_COPY_FILES += \
 	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
+	device/phh/treble/files/ota.sh:system/bin/ota.sh \
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/remove-telephony.sh:system/bin/remove-telephony.sh \
@@ -186,6 +189,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
 	android.hardware.biometrics.fingerprint@2.1-service.oppo.compat \
 
-
 PRODUCT_PACKAGES += \
-	vr_hwc
+	vr_hwc \
+	curl \
+

@@ -80,6 +80,7 @@ changeKeylayout() {
 
         cp /system/phh/samsung-gpio_keys.kl /mnt/phh/keylayout/gpio_keys.kl
         cp /system/phh/samsung-sec_touchscreen.kl /mnt/phh/keylayout/sec_touchscreen.kl
+        cp /system/phh/samsung-sec_touchkey.kl /mnt/phh/keylayout/sec_touchkey.kl
         chmod 0644 /mnt/phh/keylayout/gpio_keys.kl /mnt/phh/keylayout/sec_touchscreen.kl
     fi
 
@@ -89,7 +90,7 @@ changeKeylayout() {
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
-        -e redmi/curtana -e redmi/joyeuse; then
+        -e redmi/curtana -e redmi/picasso -e redmi/joyeuse; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -157,6 +158,14 @@ changeKeylayout() {
 
     if getprop ro.vendor.build.fingerprint |grep -q -e google/;then
         cp /system/phh/google-uinput-fpc.kl /mnt/phh/keylayout/uinput-fpc.kl
+        chmod 0644 /mnt/phh/keylayout/uinput-fpc.kl
+        changed=true
+    fi
+
+    if getprop ro.product.vendor.manufacturer |grep -q -e motorola;then
+        cp /system/phh/moto-uinput-egis.kl /mnt/phh/keylayout/uinput-egis.kl
+        cp /system/phh/moto-uinput-egis.kl /mnt/phh/keylayout/uinput-fpc.kl
+        chmod 0644 /mnt/phh/keylayout/uinput-egis.kl
         chmod 0644 /mnt/phh/keylayout/uinput-fpc.kl
         changed=true
     fi
@@ -287,7 +296,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e xiaomi/cepheus \
     -e xiaomi/grus -e xiaomi/cereus -e xiaomi/cactus -e xiaomi/raphael -e xiaomi/davinci \
     -e xiaomi/ginkgo -e xiaomi/laurel_sprout -e xiaomi/andromeda \
-    -e redmi/curtana -e redmi/joyeuse; then
+    -e redmi/curtana -e redmi/joyeuse -e redmi/picasso; then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
@@ -483,9 +492,13 @@ for f in /vendor/lib{,64}/hw/com.qti.chi.override.so /vendor/lib{,64}/libVD*;do
     chcon "$ctxt" "/mnt/phh/$b"
     mount -o bind "/mnt/phh/$b" "$f"
 
-    setprop sys.phh.xx.manufacturer "$(getprop ro.product.vendor.manufacturer)"
+    manufacturer=$(getprop ro.product.vendor.manufacturer)
+    [ -z "$manufacturer" ] && manufacturer=$(getprop ro.product.manufacturer)
+    model=$(getprop ro.product.vendor.model)
+    [ -z "$model" ] && model=$(getprop ro.product.odm.model)
+    setprop sys.phh.xx.manufacturer "$manufacturer"
     setprop sys.phh.xx.brand "$(getprop ro.product.vendor.brand)"
-    setprop sys.phh.xx.model "$(getprop ro.product.vendor.model)"
+    setprop sys.phh.xx.model "$model"
 done
 
 if [ -n "$(getprop ro.boot.product.hardware.sku)" ] && [ -z "$(getprop ro.hw.oemName)" ];then
@@ -680,7 +693,7 @@ if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
     fi
 fi
 
-if [ "$vndk" -le 28 ] && getprop ro.hardware |grep -q -e mt6761 -e mt6763 -e mt6765 -e mt6785;then
+if [ "$vndk" -le 28 ] && getprop ro.hardware |grep -q -e mt6761 -e mt6763 -e mt6765 -e mt6785 -e mt8768 -e mt6779;then
     setprop debug.stagefright.ccodec 0
 fi
 
@@ -741,3 +754,11 @@ if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeu
     setprop ro.surface_flinger.has_HDR_display true
     setprop ro.surface_flinger.has_wide_color_display true
 fi
+
+# Set props for Vsmart Live's fod
+if getprop ro.vendor.build.fingerprint |grep -q vsmart/V620A_open;then
+    setprop persist.sys.fp.fod.location.X_Y 447,1812
+    setprop persist.sys.fp.fod.size.width_height 186,186
+fi
+
+setprop vendor.display.res_switch_en 1

@@ -9,3 +9,4 @@ persist.sys.strictmode.disable=true
 
 fw.max_users=10
 persist.sys.max_profiles=10
+ro.boot.realme.lockstate=0
