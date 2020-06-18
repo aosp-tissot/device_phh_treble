@@ -37,12 +37,13 @@ include $(BUILD_PREBUILT)
 include $(CLEAR_VARS)
 LOCAL_MODULE := phh-gapps-overrides
 PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
+	Calendar \
 	YTMusic \
 	Videos \
 	Traceur \
-	CalendarGoogle \
 	FilesGoogle \
 	AssistantShell \
+	Wellbeing \
 	GmsSampleIntegration \
 	GmsSampleIntegrationGo \
 	GmsSampleIntegrationGo2GB \
