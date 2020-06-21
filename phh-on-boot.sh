@@ -61,6 +61,14 @@ getprop | \
         setprop ctl.stop "$svc"
     done
 
+# Install IMS apk
+if [ ! -f /mnt/phh/ims ];then
+	if getprop ro.boot.hardware|grep -iq  -e qcom;then
+		pm install /system/phh/ims.apk
+		touch /mnt/phh/ims
+	fi
+fi
+
 copyprop() {
     p="$(getprop "$2")"
     if [ "$p" ]; then
@@ -68,7 +76,6 @@ copyprop() {
     fi
 }
 
-sleep 30
     (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
         [ -n "$v" ] && resetprop ro.build.version.security_patch "$v"
     done
