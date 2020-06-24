@@ -14,7 +14,7 @@ if getprop persist.sys.phh.caf.media_profile |grep -q true;then
 fi
 
 if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
-    -e redmi/joyeuse;then
+    -e redmi/joyeuse -e redmi/excalibur;then
     setprop persist.sys.phh.disable_a2dp_offload true
     setprop persist.bluetooth.bluetooth_audio_hal.disabled true
     setprop persist.sys.phh.caf.audio_policy 1

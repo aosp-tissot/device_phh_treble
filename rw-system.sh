@@ -34,6 +34,25 @@ if [ ! -f /mnt/phh/ims ];then
    mount -o remount,ro /system
 fi
 
+if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur;then
+    setprop ro.netflix.bsp_rev Q6250-19132-1
+    setprop ro.surface_flinger.has_HDR_display true
+    setprop ro.surface_flinger.has_wide_color_display true
+    setprop persist.device_config.runtime_native.usap_pool_enabled true
+    if [ ! -f /system/phh/hotword_true ];then
+       mount -o remount,rw /
+       mount -o remount,rw /system
+       mv /system/phh/hotword/HotwordEnrollmentOKGoogleHEXAGON/HotwordEnrollmentOKGoogleHEXAGON.apk.tmp /system/phh/hotword/HotwordEnrollmentOKGoogleHEXAGON/HotwordEnrollmentOKGoogleHEXAGON.apk
+       mv /system/phh/hotword/HotwordEnrollmentXGoogleHEXAGON/HotwordEnrollmentXGoogleHEXAGON.apk.tmp /system/phh/hotword/HotwordEnrollmentXGoogleHEXAGON/HotwordEnrollmentXGoogleHEXAGON.apk
+       mv /system/phh/hotword/HotwordEnrollmentOKGoogleHEXAGON /system/product/priv-app/
+       mv /system/phh/hotword/HotwordEnrollmentXGoogleHEXAGON /system/product/priv-app/
+       chmod -R 0755 /system/product/priv-app/HotwordEnrollment*
+       touch /mnt/phh/hotword
+       mount -o remount,ro /
+       mount -o remount,ro /system
+    fi
+fi
+
 fixSPL() {
     if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
         setprop ro.keymaster.mod 'AOSP on ARM32'
@@ -108,7 +127,7 @@ changeKeylayout() {
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
-        -e redmi/curtana -e redmi/picasso -e redmi/joyeuse; then
+        -e redmi/curtana -e redmi/picasso -e redmi/joyeuse -e redmi/excalibur; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -314,7 +333,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e xiaomi/cepheus \
     -e xiaomi/grus -e xiaomi/cereus -e xiaomi/cactus -e xiaomi/raphael -e xiaomi/davinci \
     -e xiaomi/ginkgo -e xiaomi/laurel_sprout -e xiaomi/andromeda \
-    -e redmi/curtana -e redmi/joyeuse -e redmi/picasso; then
+    -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur -e redmi/picasso; then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
@@ -767,30 +786,10 @@ if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
     setprop ro.netflix.bsp_rev Q855-16947-1	    setprop ro.netflix.bsp_rev Q855-16947-1
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeuse;then
-    setprop ro.netflix.bsp_rev Q6250-19132-1
-    setprop ro.surface_flinger.has_HDR_display true
-    setprop ro.surface_flinger.has_wide_color_display true
-    setprop persist.device_config.runtime_native.usap_pool_enabled true
-fi
-
 # Set props for Vsmart Live's fod
 if getprop ro.vendor.build.fingerprint |grep -q vsmart/V620A_open;then
     setprop persist.sys.fp.fod.location.X_Y 447,1812
     setprop persist.sys.fp.fod.size.width_height 186,186
-fi
-
-# Change Redmi Note 9S model name to a more correct name that will also enable 'Google Voice' enrollment
-if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana;then
-    if getprop ro.boot.hwc |grep -qi -e Global_TWO;then
-        resetprop ro.product.model "Redmi Note 9S Global"
-    else
-        resetprop ro.product.model "Redmi Note 9S India"
-    fi
-fi
-
-if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/joyeuse;then
-    resetprop ro.product.model "Redmi Note 9 Pro Global"
 fi
 
 setprop vendor.display.res_switch_en 1
