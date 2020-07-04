@@ -41,9 +41,9 @@ PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
 	YTMusic \
 	Videos \
 	Traceur \
+	Wellbeing \
 	FilesGoogle \
 	AssistantShell \
-	Wellbeing \
 	GmsSampleIntegration \
 	GmsSampleIntegrationGo \
 	GmsSampleIntegrationGo2GB \

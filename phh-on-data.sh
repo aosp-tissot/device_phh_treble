@@ -25,12 +25,13 @@ if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
     pkill -f com.android.bluetooth
 fi
 
-if [ "$vndk" = 27 ] && getprop init.svc.mediacodec |grep -q restarting;then
+crashingProcess=$(getprop ro.init.updatable_crashing_process_name |grep media)
+if [ "$vndk" = 27 ] && ( getprop init.svc.mediacodec |grep -q restarting || [ -n "$crashingProcess" ] );then
     mount /system/lib64/vndk-27/libminijail.so /vendor/lib64/libminijail_vendor.so
     mount /system/lib/vndk-27/libminijail.so /vendor/lib/libminijail_vendor.so
 fi
 
-if [ "$vndk" = 28 ] && getprop |grep init.svc | grep media |grep -q restarting;then
+if [ "$vndk" = 28 ] && ( getprop |grep init.svc | grep media |grep -q restarting || [ -n "$crashingProcess" ] );then
     mount /system/lib64/vndk-27/libminijail.so /vendor/lib64/libminijail_vendor.so
     mount /system/lib/vndk-27/libminijail.so /vendor/lib/libminijail_vendor.so
     mount /system/lib64/vndk-27/libminijail.so /system/lib64/vndk-28/libminijail.so
