@@ -46,6 +46,10 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/vndk-detect:system/bin/vndk-detect \
 	device/phh/treble/vndk.rc:system/etc/init/vndk.rc \
 
+#Qcom IMS files
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/phh/treble/ims,system/phh/ims)
+
 # Hotword Note 9S
 PRODUCT_COPY_FILES += \
         $(call find-copy-subdir-files,*,device/phh/treble/hotword,system/phh/hotword)
