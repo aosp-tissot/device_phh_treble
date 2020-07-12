@@ -43,6 +43,8 @@ if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeu
     setprop ro.surface_flinger.has_HDR_display true
     setprop ro.surface_flinger.has_wide_color_display true
     setprop persist.device_config.runtime_native.usap_pool_enabled true
+    setprop debug.sf.latch_unsignaled 1
+    setprop debug.sf.enable_gl_backpressure 1
     if [ ! -f /system/phh/hotword_true ];then
        mount -o remount,rw /
        mount -o remount,rw /system
