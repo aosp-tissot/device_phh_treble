@@ -221,6 +221,14 @@ changeKeylayout() {
         changed=true
     fi
 
+    if getprop ro.vendor.asus.build.fp |grep -q ASUS_I01WD;then
+        cp /system/phh/zf6-goodixfp.kl /mnt/phh/keylayout/goodixfp.kl
+        cp /system/phh/zf6-googlekey_input.kl /mnt/phh/keylayout/googlekey_input.kl
+        chmod 0644 /mnt/phh/keylayout/goodixfp.kl
+        chmod 0644 /mnt/phh/keylayout/googlekey_input.kl
+        changed=true
+    fi
+
     if [ "$changed" = true ]; then
         mount -o bind /mnt/phh/keylayout /system/usr/keylayout
         restorecon -R /system/usr/keylayout
@@ -337,6 +345,12 @@ if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
     -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip -e Redmi/begonia\
     -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine; then
+    setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
+fi
+
+#Realme 6
+if getprop ro.vendor.product.device |grep -iq -e RMX2001;then
+    setprop persist.sys.phh.fingerprint.nocleanup true
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
@@ -759,7 +773,8 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
 fi
 
 if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
-    setprop oppo.camera.packname com.oppo.camera
+    resetprop ro.vendor.gsi.build.flavor byPass
+    setprop oppo.camera.packname com.oppo.engineermode.camera
     setprop sys.phh.xx.brand realme
 fi
 
@@ -851,3 +866,4 @@ if getprop ro.bionic.cpu_variant |grep -q kryo300;then
     setprop dalvik.vm.isa.arm64.features runtime
 fi
 
+resetprop ro.control_privapp_permissions log
