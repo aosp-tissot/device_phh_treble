@@ -92,3 +92,23 @@ copyprop() {
     (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
         [ -n "$v" ] && resetprop ro.build.version.security_patch "$v"
     done
+
+if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^UMIDIGI/A7_Pro' -e '^DOOGEE/Y8'; then
+    echo "schedplus" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    echo 1 > /sys/devices/system/cpu/eas/enable
+    echo 1 > /dev/stune/schedtune.boost
+    echo 1 > /dev/stune/foreground/schedtune.boost
+    echo 1 > /dev/stune/top-app/schedtune.boost
+    echo 512 > /sys/block/mmcblk0/queue/iostats 1
+    echo 512 > /sys/block/mmcblk0/queue/read_ahead_kb
+    echo 512 > /sys/block/mmcblk0/queue/nr_requests
+    echo 512 > /sys/block/sdc/queue/iostats 1
+    echo 512 > /sys/block/sdc/queue/read_ahead_kb
+    echo 512 > /sys/block/sdc/queue/nr_requests
+    echo 512 > /sys/block/dm-0/queue/read_ahead_kb
+    echo 512 > /sys/block/dm-1/queue/read_ahead_kb
+    echo 512 > /sys/block/dm-2/queue/read_ahead_kb
+    echo 512 > /sys/block/dm-3/queue/read_ahead_kb
+    echo 512 > /sys/block/dm-4/queue/read_ahead_kb
+    echo 512 > /sys/block/dm-5/queue/read_ahead_kb
+fi
