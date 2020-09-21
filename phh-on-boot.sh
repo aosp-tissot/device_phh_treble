@@ -71,17 +71,6 @@ if [ ! -f /system/phh/ims_true ];then
 	fi
 fi
 
-# Install Hotwords on curtana
-if [ ! -f /system/phh/hotword_true ];then
-	if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur;then
-		pm install -r /system/phh/hotword/HotwordEnrollmentOKGoogleHEXAGON/HotwordEnrollmentOKGoogleHEXAGON.apk
-		pm install -r /system/phh/hotword/HotwordEnrollmentOKGoogleHEXAGON/HotwordEnrollmentXGoogleHEXAGON.apk
-		mount -o remount,rw /
-		touch /system/phh/hotword_true
-		mount -o remount,ro /
-	fi
-fi
-
 copyprop() {
     p="$(getprop "$2")"
     if [ "$p" ]; then

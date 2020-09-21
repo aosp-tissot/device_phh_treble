@@ -38,27 +38,18 @@ if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
     mount -o bind /system/etc/mixer_paths_wcd937x.xml /vendor/etc/mixer_paths_wcd937x.xml
     mount -o bind /system/etc/media_profiles_vendor.xml /vendor/etc/media_profiles_vendor.xml
     setprop ctl.restart vendor.audio-hal-2-0
-    setprop persist.sys.phh.linear_brightness true
+    setprop persist.sys.phh.linear_brightness false
     pkill -f com.android.bluetooth
 fi
 
+crashingProcess=$(getprop ro.init.updatable_crashing_process_name |grep media)
+if [ "$vndk" = 27 ] && ( getprop init.svc.mediacodec |grep -q restarting || [ -n "$crashingProcess" ] );then
+=======
 
-# Enable IMS on qcom devices
-if getprop ro.boot.hardware|grep -q -e qcom;then
-    if getprop ro.product.cpu.abi | grep -q -e 'arm64-v8a'; then
-        resetprop persist.dbg.allow_ims_off 1
-        resetprop persist.dbg.volte_avail_ovr 1
-        resetprop persist.dbg.vt_avail_ovr 1
-        resetprop persist.dbg.wfc_avail_ovr 1
-        resetprop persist.sys.phh.ims.caf true
-     fi
-     if getprop ro.product.cpu.abi | grep -q -e 'armeabi-v7a'; then
-        resetprop persist.dbg.allow_ims_off 1
-        resetprop persist.dbg.volte_avail_ovr 1
-        resetprop persist.dbg.vt_avail_ovr 1
-        resetprop persist.dbg.wfc_avail_ovr 1
-        resetprop persist.sys.phh.ims.caf true
-     fi
+if [ "$vndk" = 27 ];then
+>>>>>>> 6e496dafb01975cf12b09628945c2fa879aae5e3
+    mount /system/lib64/vndk-27/libminijail.so /vendor/lib64/libminijail_vendor.so
+    mount /system/lib/vndk-27/libminijail.so /vendor/lib/libminijail_vendor.so
 fi
 
 # Enable IMS on qcom devices
