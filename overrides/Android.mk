@@ -8,6 +8,13 @@ PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
 	YouTubeGo \
 	DuoGo \
 	Traceur \
+        AssistantGo \
+        GalleryGo \
+        GMailGo \
+        GoogleSearchGo \
+        MapsGo \
+        NavGo \
+        YouTubeGo \
 	GmsSampleIntegration \
 	GmsSampleIntegrationGo \
 	GmsSampleIntegrationGo2GB \
@@ -37,13 +44,19 @@ include $(BUILD_PREBUILT)
 include $(CLEAR_VARS)
 LOCAL_MODULE := phh-gapps-overrides
 PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
+	AssistantShell \
+	Drive \
+	Gmail \
 	Calendar \
+	Photos \
+	Duo \
+	YouTube \
+	Maps \
 	YTMusic \
 	Videos \
 	Traceur \
 	Wellbeing \
 	FilesGoogle \
-	AssistantShell \
 	GmsSampleIntegration \
 	GmsSampleIntegrationGo \
 	GmsSampleIntegrationGo2GB \
