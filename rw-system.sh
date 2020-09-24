@@ -620,6 +620,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^UMIDIGI/A7_Pro' -e '^D
       chmod 0755 /system/etc/permissions/privapp-permissions-mediatek.xml
       cp /system/phh/a7pro/privapp-permissions-mediatek.xml /system/etc/permissions/privapp-permissions-mediatek.xml
       mount -o bind /system/phh/a7pro/audio_policy_configuration.xml /vendor/etc/audio_policy_configuration.xml
+      setprop persist.sys.overlay.devinputjack true
    fi
 #   mkdir /system/priv-app/ImsService
 #   cp /system/phh/a7pro/ims.txt /system/priv-app/ImsService/ImsService.apk
