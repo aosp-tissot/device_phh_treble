@@ -46,7 +46,6 @@ LOCAL_MODULE := phh-gapps-overrides
 PACKAGES.$(LOCAL_MODULE).OVERRIDES := \
 	AssistantShell \
 	Drive \
-	Gmail \
 	Calendar \
 	Photos \
 	Duo \
