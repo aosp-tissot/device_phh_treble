@@ -66,6 +66,8 @@ fixSPL() {
         for f in \
             /vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so \
             /system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed \
+            /apex/com.android.vndk.v26/lib/libsoftkeymasterdevice.so  \
+            /apex/com.android.vndk.v26/lib64/libsoftkeymasterdevice.so  \
             /system/lib64/vndk/libsoftkeymasterdevice.so /system/lib/vndk/libsoftkeymasterdevice.so \
             /system/lib/vndk-26/libsoftkeymasterdevice.so \
             /system/lib/vndk-27/libsoftkeymasterdevice.so /system/lib64/vndk-27/libsoftkeymasterdevice.so \
@@ -689,7 +691,7 @@ for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
     if [ -f "$f" ];then
         for vndk in 26 27 28 29;do
-            mount "$f" /system/lib$abi/vndk-$vndk/libstagefright_foundation.so
+            mount "$f" /system/system_ext/apex/com.android.vndk.v$vndk/lib$abi/libstagefright_foundation.so
         done
     fi
 done
@@ -866,3 +868,16 @@ fi
 
 resetprop ro.control_privapp_permissions log
 
+if [ -f /vendor/etc/init/vendor.ozoaudio.media.c2@1.0-service.rc ];then
+    if [ "$vndk" -le 29 ]; then
+        mount /system/etc/seccomp_policy/mediacodec.policy /vendor/etc/seccomp_policy/codec2.vendor.base.policy
+    fi
+fi
+
+if [ "$vndk" -le 27 ];then
+    setprop persist.sys.phh.no_present_or_validate true
+fi
+
+if grep -q /mnt/vendor/persist /vendor/etc/fstab.qcom;then
+    mount /mnt/vendor/persist /persist
+fi
