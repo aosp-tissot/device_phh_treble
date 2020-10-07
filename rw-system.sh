@@ -68,11 +68,10 @@ if [ ! -f /mnt/phh/ims ];then
    mount -o remount,rw /system
    if getprop ro.boot.hardware|grep -iq  -e qcom;then
 	  if getprop ro.product.cpu.abi | grep -iq  -e  'arm64-v8a'; then
-              	 mkdir /system/priv-app/ims
-		 mv /system/phh/ims/64bit/ims/ims.apk.tmp /system/priv-app/ims/ims.apk
-                 chmod -R 0755 /system/priv-app/ims/
-	         mv /system/phh/ims/64bit/lib/libims* /system/lib64/
-	         chmod 0644 /system/lib64/libims*
+		 mv /system/phh/ims/64bit/ims/ims.apk.tmp /system/product/priv-app/ims.apk
+                 chmod -R 0644 /system/product/priv-app/ims.apk
+	         mv /system/phh/ims/64bit/lib/libims* /system/product/lib64/
+	         chmod 0644 /system/product/lib64/libims*
 	  fi
 	  if getprop ro.product.cpu.abi | grep -iq  -e 'armeabi-v7a'; then
 		 mv /system/phh/ims/32bit/ims/ims.apk.tmp /system/phh/ims.apk
