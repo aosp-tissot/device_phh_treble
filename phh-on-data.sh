@@ -9,6 +9,30 @@ if getprop persist.sys.phh.no_vendor_overlay |grep -q true;then
 	done
 fi
 
+mount -o remount,rw /
+mount -o remount,rw /system
+mount -o remount,rw /system_root
+if getprop persist.sys.phh.root |grep -q true && [ ! -f /system/xbin/su ];then
+   cp -rf /system/phh/root/system/* /system/
+   chmod 0755 /system/bin/phh-su
+   chmod -R 0755 /system/xbin
+   chmod 0644 /system/etc/init/su.rc
+   chcon u:object_r:phhsu_exec:s0 /system/bin/phh-su
+   mv /system/phh/root/phh.apk.tmp /system/priv-app/phh-su.apk
+   chmod 0755 /system/priv-app/phh-su.apk
+fi
+
+if getprop persist.sys.phh.root |grep -q false && [ -f /system/xbin/su ];then
+    rm -rf /system/bin/phh-su
+    rm -rf /system/xbin
+    rm /system/etc/su.rc
+    rm -rf /data/su
+    mv /system/priv-app/phh-su.apk /system/phh/root/phh.apk.tmp
+fi
+mount -o remount,ro /
+mount -o remount,ro /system
+mount -o remount,ro /system_root
+
 if getprop persist.sys.phh.caf.media_profile |grep -q true;then
     setprop media.settings.xml "/vendor/etc/media_profiles_vendor.xml"
 fi
