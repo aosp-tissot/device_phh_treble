@@ -91,6 +91,32 @@ if [ "$1" == "persist.sys.phh.oppo.gaming_mode" ]; then
     exit
 fi
 
+if [ "$1" == "persist.sys.phh.root" ]; then
+    if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
+        exit 1
+    fi
+    mount -o remount,rw /
+    mount -o remount,rw /system
+    if [[ "$prop_value" == "0" ]]; then
+       rm -rf /system/bin/phh-su
+       rm -rf /system/xbin
+       rm /system/etc/su.rc
+       rm -rf /data/su
+    fi
+    if [[ "$prop_value" == "1" ]]; then
+       cp -rf /system/phh/root/system/* /system/
+       chmod 0755 /system/bin/phh-su
+       chmod -R 0755 /system/xbin
+       chmod 0644 /system/etc/init/su.rc
+       chcon u:object_r:phhsu_exec:s0 /system/bin/phh-su
+       mv /system/phh/root/phh.apk.tmp /system/phh/root/phh.apk
+       pm install /system/phh/root/phh.apk
+    fi
+    mount -o remount,ro /
+    mount -o remount,ro /system
+fi
+
+
 if [ "$1" == "persist.sys.phh.oppo.usbotg" ]; then
     if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
         exit 1
