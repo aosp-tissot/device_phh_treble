@@ -45,6 +45,10 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/vndk-detect:system/bin/vndk-detect \
 	device/phh/treble/vndk.rc:system/etc/init/vndk.rc \
 
+# Phh SuperUser Files
+PRODUCT_COPY_FILES += \
+        $(call find-copy-subdir-files,*,device/phh/treble/root,system/phh/root)
+
 #USB Audio
 PRODUCT_COPY_FILES += \
 	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml \
