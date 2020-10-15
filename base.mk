@@ -50,6 +50,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/phh/treble/ims,system/phh/ims)
 
+# Phh SuperUser Files
+PRODUCT_COPY_FILES += \
+        $(call find-copy-subdir-files,*,device/phh/treble/root,system/phh/root)
+
+
 # Hotword Note 9S
 PRODUCT_COPY_FILES += \
         $(call find-copy-subdir-files,*,device/phh/treble/hotword,system/phh/hotword)
