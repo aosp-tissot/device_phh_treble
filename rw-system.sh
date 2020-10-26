@@ -1,10 +1,14 @@
 #!/system/bin/sh
 
-#Uncomment me to output sh -x of this script to /cache/phh/logs
-#if [ -z "$debug" ];then
-#	mkdir -p /cache/phh
-#	debug=1 exec sh -x "$(readlink -f -- "$0")" > /cache/phh/logs 2>&1
-#fi
+if [ -z "$debug" ] && [ -f /cache/phh-log ];then
+	mkdir -p /cache/phh
+	debug=1 exec sh -x "$(readlink -f -- "$0")" > /cache/phh/logs 2>&1
+else
+    # Allow accessing logs from system app
+    # Protected via SELinux for other apps
+    chmod 0755 /cache/phh
+    chmod 0644 /cache/phh/logs
+fi
 
 vndk="$(getprop persist.sys.vndk)"
 [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
@@ -127,7 +131,9 @@ changeKeylayout() {
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
-        -e redmi/curtana -e redmi/picasso -e redmi/joyeuse -e redmi/excalibur; then
+        -e redmi/curtana -e redmi/picasso -e redmi/joyeuse \
+        -e redmi/excalibur -e redmi/picasso -e Redmi/lancelot \
+        -e Redmi/galahad; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -338,7 +344,8 @@ if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
     -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip -e Redmi/begonia\
-    -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine; then
+    -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine \
+    -e Redmi/lancelot -e Redmi/galahad; then
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
