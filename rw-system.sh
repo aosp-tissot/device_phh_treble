@@ -620,34 +620,7 @@ if ! grep android.hardware.ir /vendor/manifest.xml;then
 fi
 
 if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^UMIDIGI/A7_Pro' -e '^DOOGEE/Y8'; then
-   mount -o remount,rw /
-   mount -o remount,rw /system
-   if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^UMIDIGI/A7_Pro'; then
-      chmod 0755 /system/etc/permissions/privapp-permissions-mediatek.xml
-      cp /system/phh/a7pro/privapp-permissions-mediatek.xml /system/etc/permissions/privapp-permissions-mediatek.xml
-      mount -o bind /system/phh/a7pro/audio_policy_configuration.xml /vendor/etc/audio_policy_configuration.xml
-      setprop persist.sys.overlay.devinputjack true
-   fi
-#   mkdir /system/priv-app/ImsService
-#   cp /system/phh/a7pro/ims.txt /system/priv-app/ImsService/ImsService.apk
-#   chmod 0755 /system/priv-app/ImsService
-#   chmod 0755 /system/priv-app/ImsService/ImsService.apk
-   setprop debug.sf.latch_unsigned 1
-   setprop debug.sf.disable_backpressure 1
-   setprop ro.surface_flinger.running_without_sync_framework true
-   setprop ro.surface_flinger.max_frame_buffer_acquired_buffers 3
-   setprop ro.surface_flinger.vsync_event_phase_offset_ns 2000000
-   setprop ro.surface_flinger.vsync_sf_event_phase_offset_ns 6000000
-   setprop debug.stagefright.ccodec 0
-   setprop debug.stagefright.omx_default_rank.sw-audio 1
-   setprop debug.stagefright.omx_default_rank 0
-   setprop ro.mtk_perf_simple_start_win 1
-   setprop ro.mtk_perf_fast_start_win 1
-   setprop ro.mtk_perf_response_time 1
-#   setprop persist.sys.phh.ims.mtk true
-#   setprop persist.dbg.volte_avail_ovr 1
-#   setprop persist.dbg.vt_avail_ovr 1
-#   setprop persist.dbg.wfc_avail_ovt 1
+   setprop persist.sys.overlay.devinputjack true
 fi
 
 # Disable HW Encryption on Doogee Y8 for now
