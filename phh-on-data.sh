@@ -46,6 +46,7 @@ if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
     mount -o bind /system/etc/media_profiles_vendor.xml /vendor/etc/media_profiles_vendor.xml
     setprop ctl.restart vendor.audio-hal-2-0
     setprop persist.sys.phh.linear_brightness false
+    setprop persist.sys.phh.backlight.scale 1
     pkill -f com.android.bluetooth
 fi
 
