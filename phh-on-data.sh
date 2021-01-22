@@ -50,11 +50,6 @@ if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
     pkill -f com.android.bluetooth
 fi
 
-# Improve storage performance for all devices launched under 11
-if [ "$vndk" -le 29 ];then
-   setprop persist.sys.fflag.override.settings_fuse false
-fi
-
 minijailSrc=/system/system_ext/apex/com.android.vndk.v28/lib/libminijail.so
 minijailSrc64=/system/system_ext/apex/com.android.vndk.v28/lib64/libminijail.so
 if [ "$vndk" = 27 ];then
