@@ -12,6 +12,10 @@ PRODUCT_COPY_FILES := \
 PRODUCT_COPY_FILES += \
 	device/sample/etc/apns-full-conf.xml:system/etc/apns-conf.xml
 
+# Get stupid magisk working
+PRODUCT_COPY_FILES += \
+        device/phh/treble/empty:root/sbin/empty
+
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += device/phh/treble/sepolicy
 PRODUCT_PACKAGE_OVERLAYS += device/phh/treble/overlay
 
