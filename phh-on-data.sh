@@ -79,11 +79,7 @@ if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
 fi
 
 crashingProcess=$(getprop ro.init.updatable_crashing_process_name |grep media)
-if [ "$vndk" = 27 ] && ( getprop init.svc.mediacodec |grep -q restarting || [ -n "$crashingProcess" ] );then
-=======
-
 if [ "$vndk" = 27 ];then
->>>>>>> 6e496dafb01975cf12b09628945c2fa879aae5e3
     mount /system/lib64/vndk-27/libminijail.so /vendor/lib64/libminijail_vendor.so
     mount /system/lib/vndk-27/libminijail.so /vendor/lib/libminijail_vendor.so
 fi
