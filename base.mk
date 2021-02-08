@@ -218,3 +218,6 @@ PRODUCT_PACKAGES += \
 	vr_hwc \
 	curl \
 	healthd \
+
+PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+	debug.fdsan=0 \

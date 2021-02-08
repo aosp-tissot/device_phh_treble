@@ -10,6 +10,48 @@ else
     chmod 0644 /cache/phh/logs
 fi
 
+if [ -f /cache/phh-adb ];then
+    setprop ctl.stop adbd
+    setprop ctl.stop adbd_apex
+    mount -t configfs none /config
+    rm -Rf /config/usb_gadget
+    mkdir -p /config/usb_gadget/g1
+
+    echo 0x12d1 > /config/usb_gadget/g1/idVendor
+    echo 0x103A > /config/usb_gadget/g1/idProduct
+    mkdir -p /config/usb_gadget/g1/strings/0x409
+    echo phh > /config/usb_gadget/g1/strings/0x409/serialnumber
+    echo phh > /config/usb_gadget/g1/strings/0x409/manufacturer
+    echo phh > /config/usb_gadget/g1/strings/0x409/product
+
+    mkdir /config/usb_gadget/g1/functions/ffs.adb
+    mkdir /config/usb_gadget/g1/functions/mtp.gs0
+    mkdir /config/usb_gadget/g1/functions/ptp.gs1
+
+    mkdir /config/usb_gadget/g1/configs/c.1/
+    mkdir /config/usb_gadget/g1/configs/c.1/strings/0x409
+    echo 'ADB MTP' > /config/usb_gadget/g1/configs/c.1/strings/0x409/configuration
+
+    mkdir /dev/usb-ffs
+    chmod 0770 /dev/usb-ffs
+    chown shell:shell /dev/usb-ffs
+    mkdir /dev/usb-ffs/adb/
+    chmod 0770 /dev/usb-ffs/adb
+    chown shell:shell /dev/usb-ffs/adb
+
+    mount -t functionfs -o uid=2000,gid=2000 adb /dev/usb-ffs/adb
+
+    /apex/com.android.adbd/bin/adbd &
+
+    sleep 1
+    echo none > /config/usb_gadget/g1/UDC
+    ln -s /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/c.1/f1
+    ls /sys/class/udc |head -n 1 > /config/usb_gadget/g1/UDC
+
+    sleep 2
+    echo 2 > /sys/devices/virtual/android_usb/android0/port_mode
+fi
+
 vndk="$(getprop persist.sys.vndk)"
 [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
 
@@ -135,11 +177,12 @@ changeKeylayout() {
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
+        -e redmi/angelica -e redmi/angelican \
         -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
         -e redmi/curtana -e redmi/picasso -e redmi/joyeuse \
         -e redmi/excalibur -e redmi/picasso -e Redmi/lancelot \
-        -e Redmi/galahad; then
+        -e Redmi/galahad -e xiaomi/olive -e Redmi/angelica; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -288,7 +331,7 @@ if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml; then
 fi
 
 foundFingerprint=false
-for manifest in /vendor/manifest.xml /vendor/etc/vintf/manifest.xml;do
+for manifest in /vendor/manifest.xml /vendor/etc/vintf/manifest.xml /odm/etc/vintf/manifest.xml;do
     if grep -q -e android.hardware.biometrics.fingerprint -e vendor.oppo.hardware.biometrics.fingerprint $manifest;then
         foundFingerprint=true
     fi
@@ -625,6 +668,8 @@ if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 
     fi
 fi
 
+setprop ctl.stop console
+dmesg -n 1
     copyprop() {
         p="$(getprop "$2")"
         if [ "$p" ]; then
@@ -632,8 +677,6 @@ fi
         fi
     }
 
-    setprop ctl.stop console
-    dmesg -n 1
     copyprop ro.build.device ro.vendor.build.device
     copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
     copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
@@ -684,6 +727,10 @@ fi
     fi
     resetprop ro.adb.secure 1
     setprop ctl.restart adbd
+
+resetprop ro.adb.secure 0
+setprop ctl.restart adbd
+
 
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
@@ -818,6 +865,8 @@ if getprop ro.vendor.build.fingerprint |grep -qiE \
 fi
 resetprop service.adb.root 0
 
+setprop persist.sys.usb.config mtp,adb
+
 # This is for Samsung Galaxy devices with HBM FOD
 # On those devices, a magic Layer usageBits switches to "mask_brightness"
 # But default is 255, so set it to max instead
@@ -829,9 +878,11 @@ fi
 
 if getprop ro.vendor.build.fingerprint |grep -qiE '^samsung/';then
     for f in /sys/class/lcd/panel/actual_mask_brightness /sys/class/lcd/panel/mask_brightness /sys/class/lcd/panel/device/backlight/panel/brightness /sys/class/backlight/panel0-backlight/brightness;do
-        chcon u:object_r:sysfs_lcd_writable:s0 $f
-        chmod 0644 $f
-        chown system:system $f
+        if [ "$(stat -c '%U' "$f")" == "root" ];then
+            chcon u:object_r:sysfs_lcd_writable:s0 $f
+            chmod 0644 $f
+            chown system:system $f
+        fi
     done
 
     setprop persist.sys.phh.fod.samsung true
