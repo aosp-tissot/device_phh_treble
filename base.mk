@@ -15,6 +15,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
         device/phh/treble/empty:root/sbin/empty
 
+# Inherit some common PixelExperience stuff.
+$(call inherit-product, vendor/aosp/config/common_full_phone.mk)
+
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += device/phh/treble/sepolicy
 PRODUCT_PACKAGE_OVERLAYS += device/phh/treble/overlay
 
