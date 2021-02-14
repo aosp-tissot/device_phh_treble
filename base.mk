@@ -18,6 +18,8 @@ PRODUCT_COPY_FILES += \
 # Inherit some common PixelExperience stuff.
 $(call inherit-product, vendor/aosp/config/common_full_phone.mk)
 
+IS_GENERIC_SYSTEM_IMAGE := true
+
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += device/phh/treble/sepolicy
 PRODUCT_PACKAGE_OVERLAYS += device/phh/treble/overlay
 
