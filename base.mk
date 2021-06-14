@@ -51,6 +51,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/phh/treble/ims,system/phh/ims)
 
+# Hotword Note 9S
+PRODUCT_COPY_FILES += \
+        $(call find-copy-subdir-files,*,device/phh/treble/hotword,system/phh/hotword)
+
 #USB Audio
 PRODUCT_COPY_FILES += \
 	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml \
