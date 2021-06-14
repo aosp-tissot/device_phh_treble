@@ -50,11 +50,6 @@ if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
     pkill -f com.android.bluetooth
 fi
 
-# Improve storage performance for all devices launched under 11
-if [ "$vndk" -le 29 ];then
-   setprop persist.sys.fflag.override.settings_fuse false
-fi
-
 # Enable IMS on qcom devices
 if getprop ro.boot.hardware|grep -q -e qcom;then
     if getprop ro.product.cpu.abi | grep -q -e 'arm64-v8a'; then
