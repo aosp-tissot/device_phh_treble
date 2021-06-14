@@ -62,6 +62,24 @@ fi
 setprop sys.usb.ffs.aio_compat true
 setprop persist.adb.nonblocking_ffs false
 
+# Enable IMS for qcom devices
+if [ ! -f /mnt/phh/ims ];then
+   mount -o remount,rw /
+   mount -o remount,rw /system
+   if getprop ro.boot.hardware|grep -iq  -e qcom;then
+	  if getprop ro.product.cpu.abi | grep -iq  -e  'arm64-v8a'; then
+		 mv /system/phh/ims/64bit/ims/ims.apk.tmp /system/phh/ims.apk
+	  fi
+	  if getprop ro.product.cpu.abi | grep -iq  -e 'armeabi-v7a'; then
+		 mv /system/phh/ims/32bit/ims/ims.apk.tmp /system/phh/ims.apk
+	  fi
+	  cp /system/phh/android.hardware.telephony.ims.xml /system/etc/permissions/
+	  chmod 0644 /system/etc/permissions/android.hardware.telephony.ims.xml
+   fi
+   mount -o remount,ro /
+   mount -o remount,ro /system
+fi
+
 fixSPL() {
     if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
         setprop ro.keymaster.mod 'AOSP on ARM32'
