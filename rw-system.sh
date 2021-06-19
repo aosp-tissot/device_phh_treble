@@ -56,7 +56,7 @@ vndk="$(getprop persist.sys.vndk)"
 [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
 
 if [ "$vndk" = 26 ];then
-	resetprop ro.vndk.version 26
+	resetprop_phh ro.vndk.version 26
 fi
 
 setprop sys.usb.ffs.aio_compat true
@@ -174,15 +174,7 @@ changeKeylayout() {
     fi
 
     if getprop ro.vendor.build.fingerprint | grep -iq \
-        -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
-        -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
-        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
-        -e redmi/angelica -e redmi/angelican \
-        -e xiaomi/nitrogen -e xiaomi/sakura -e xiaomi/andromeda \
-        -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc \
-        -e redmi/curtana -e redmi/picasso -e redmi/joyeuse \
-        -e redmi/excalibur -e redmi/picasso -e Redmi/lancelot \
-        -e Redmi/galahad -e xiaomi/olive -e Redmi/angelica; then
+        -e poco/ -e redmi/ -e xiaomi/ ; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -270,11 +262,29 @@ changeKeylayout() {
         changed=true
     fi
 
+    if getprop ro.vendor.build.fingerprint |grep -q -i -e Teracube/Teracube_2e;then
+        cp /system/phh/teracube2e-mtk-kpd.kl /mnt/phh/keylayout/mtk-kpd.kl
+        chmod 0644 /mnt/phh/keylayout/mtk-kpd.kl
+        changed=true
+    fi
+
     if getprop ro.vendor.asus.build.fp |grep -q ASUS_I01WD;then
         cp /system/phh/zf6-goodixfp.kl /mnt/phh/keylayout/goodixfp.kl
         cp /system/phh/zf6-googlekey_input.kl /mnt/phh/keylayout/googlekey_input.kl
         chmod 0644 /mnt/phh/keylayout/goodixfp.kl
         chmod 0644 /mnt/phh/keylayout/googlekey_input.kl
+        changed=true
+    fi
+
+    if getprop ro.vendor.build.fingerprint | grep -q -e Unihertz/;then
+        cp /system/phh/unihertz-mtk-kpd.kl /mnt/phh/keylayout/mtk-kpd.kl
+        cp /system/phh/unihertz-mtk-tpd.kl /mnt/phh/keylayout/mtk-tpd.kl
+        cp /system/phh/unihertz-mtk-tpd-kpd.kl /mnt/phh/keylayout/mtk-tpd-kpd.kl
+        cp /system/phh/unihertz-fingerprint_key.kl /mnt/phh/keylayout/fingerprint_key.kl
+        chmod 0644 /mnt/phh/keylayout/mtk-kpd.kl
+        chmod 0644 /mnt/phh/keylayout/mtk-tpd.kl
+        chmod 0644 /mnt/phh/keylayout/mtk-tpd-kpd.kl
+        chmod 0644 /mnt/phh/keylayout/fingerprint_key.kl
         changed=true
     fi
 
@@ -392,14 +402,14 @@ fi
 if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
-    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip -e Redmi/begonia\
+    -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip \
     -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine \
     -e Redmi/lancelot -e Redmi/galahad; then
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
 #Realme 6
-if getprop ro.vendor.product.device |grep -iq -e RMX2001;then
+if getprop ro.vendor.product.device |grep -iq -e RMX2001 -e RMX2151 -e RMX2111 -e RMX2111L1;then
     setprop persist.sys.phh.fingerprint.nocleanup true
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
@@ -412,7 +422,7 @@ if getprop ro.build.overlay.deviceid |grep -q -e CPH1859 -e CPH1861 -e RMX1811 -
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
-if getprop ro.build.overlay.deviceid |grep -iq -e RMX2020 -e RMX2027;then	
+if getprop ro.build.overlay.deviceid |grep -iq -e RMX2020 -e RMX2027 -e RMX2040 -e RMX2193 -e RMX2191;then	
     setprop persist.sys.qcom-brightness 2047
     setprop persist.sys.overlay.devinputjack true
     setprop persist.sys.phh.fingerprint.nocleanup true
@@ -426,10 +436,16 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     -e motorola/hannah -e motorola/james -e motorola/pettyl -e xiaomi/cepheus \
     -e xiaomi/grus -e xiaomi/cereus -e xiaomi/cactus -e xiaomi/raphael -e xiaomi/davinci \
     -e xiaomi/ginkgo -e xiaomi/laurel_sprout -e xiaomi/andromeda \
-    -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur -e redmi/picasso; then
+    -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur -e redmi/picasso \
+    -e bq/Aquaris_M10 ; then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     setprop  ro.audio.ignore_effects true
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -iq \
+	-e bq/Aquaris_M10 ; then
+	setprop ro.surface_flinger.primary_display_orientation ORIENTATION_90
 fi
 
 if getprop ro.build.fingerprint | grep -iq \
@@ -486,8 +502,7 @@ for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.
     setprop persist.sys.radio.ussd.fix true
 done
 
-if getprop ro.vendor.build.fingerprint | grep -iq -e iaomi/cactus -e iaomi/cereus \
-    -e Redmi/begonia; then
+if getprop ro.vendor.build.fingerprint | grep -iq -e iaomi/cactus -e iaomi/cereus; then
     setprop debug.stagefright.omx_default_rank.sw-audio 1
     setprop debug.stagefright.omx_default_rank 0
 fi
@@ -596,7 +611,9 @@ if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/wayne/wayne.*'; then
     setprop audio.camerasound.force true
 fi
 
-mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
+if [ $(find /vendor/etc/audio -type f |wc -l) -le 3 ];then
+	mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
+fi
 
 if ! grep android.hardware.ir /vendor/manifest.xml;then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.consumerir.xml
@@ -668,12 +685,26 @@ if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 
     fi
 fi
 
+# For Nubia Red Magic 6 audio policy configuration
+if getprop ro.vendor.build.fingerprint | grep -q -e nubia/NX669; then
+    umount /vendor/etc/audio
+    sku="$(getprop ro.boot.product.vendor.sku)"
+    mount /vendor/etc/audio/sku_${sku}_qssi/audio_policy_configuration.xml /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml
+fi
+
+# For ZF8, the "best" audio policy isn't the one for QSSI
+if getprop ro.vendor.build.fingerprint |grep -q -e /ASUS_I006D:;then
+    umount /vendor/etc/audio
+    sku="$(getprop ro.boot.product.vendor.sku)"
+    mount /vendor/etc/audio/ZS590KS/audio_policy_configuration_ZS590KS.xml /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml
+fi
+
 setprop ctl.stop console
 dmesg -n 1
     copyprop() {
         p="$(getprop "$2")"
         if [ "$p" ]; then
-            resetprop "$1" "$(getprop "$2")"
+            resetprop_phh "$1" "$(getprop "$2")"
         fi
     }
 
@@ -728,10 +759,6 @@ dmesg -n 1
     resetprop ro.adb.secure 1
     setprop ctl.restart adbd
 
-resetprop ro.adb.secure 0
-setprop ctl.restart adbd
-
-
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
     if [ -f "$f" ];then
@@ -780,6 +807,11 @@ for i in odm oem vendor product;do
     if grep -qF android.hardware.wifi.hostapd /$i/etc/vintf/manifest.xml;then
         has_hostapd=true
     fi
+    for j in /$i/etc/vintf/manifest/*;do
+        if grep -qF android.hardware.wifi.hostapd $j;then
+            has_hostapd=true
+        fi
+    done
 done
 
 if [ "$has_hostapd" = false ];then
@@ -823,7 +855,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
 fi
 
 if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
-    resetprop ro.vendor.gsi.build.flavor byPass
+    resetprop_phh ro.vendor.gsi.build.flavor byPass
     setprop oppo.camera.packname com.oppo.engineermode.camera
     setprop sys.phh.xx.brand realme
 fi
@@ -837,7 +869,9 @@ if [ -f /proc/oppoVersion/prjVersion ];then
 fi
 
 echo 1 >  /proc/tfa98xx/oppo_tfa98xx_fw_update
-echo 1 > /proc/touchpanel/tp_fw_update
+if ! grep -q -E -e '.*#write .*tp_fw_update' /vendor/etc/init/hw/*touch*;then
+	echo 1 > /proc/touchpanel/tp_fw_update
+fi
 
 if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
     chmod 0660 /sys/devices/platform/soc/soc:fpc_fpc1020/{irq,irq_enable,wakelock_enable}
@@ -863,9 +897,7 @@ if getprop ro.vendor.build.fingerprint |grep -qiE \
         -e razer/cheryl ; then
     setprop media.settings.xml "/vendor/etc/media_profiles_vendor.xml"
 fi
-resetprop service.adb.root 0
-
-setprop persist.sys.usb.config mtp,adb
+resetprop_phh service.adb.root 0
 
 # This is for Samsung Galaxy devices with HBM FOD
 # On those devices, a magic Layer usageBits switches to "mask_brightness"
@@ -904,7 +936,7 @@ if getprop ro.build.overlay.deviceid |grep -iq -e RMX2185 -e RMX1941 -e RMX1945 
     setprop persist.sys.overlay.devinputjack true
 fi
 
-resetprop ro.bluetooth.library_name libbluetooth.so
+resetprop_phh ro.bluetooth.library_name libbluetooth.so
 
 if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
     setprop ro.netflix.bsp_rev Q855-16947-1	    setprop ro.netflix.bsp_rev Q855-16947-1
@@ -919,12 +951,12 @@ fi
 setprop vendor.display.res_switch_en 1
 
 if getprop ro.bionic.cpu_variant |grep -q kryo300;then
-    resetprop ro.bionic.cpu_variant cortex-a75
+    resetprop_phh ro.bionic.cpu_variant cortex-a75
     setprop dalvik.vm.isa.arm64.variant cortex-a75
     setprop dalvik.vm.isa.arm64.features runtime
 fi
 
-resetprop ro.control_privapp_permissions log
+resetprop_phh ro.control_privapp_permissions log
 
 if [ -f /vendor/etc/init/vendor.ozoaudio.media.c2@1.0-service.rc ];then
     if [ "$vndk" -le 29 ]; then
@@ -947,3 +979,6 @@ done
 if [ "$vndk" -le 27 ] && [ -f /vendor/bin/mnld ];then
     setprop persist.sys.phh.sdk_override /vendor/bin/mnld=26
 fi
+
+# Disable secondary watchdogs
+echo -n V > /dev/watchdog1

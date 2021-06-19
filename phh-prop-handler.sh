@@ -132,9 +132,9 @@ if [ "$1" == "persist.sys.phh.disable_audio_effects" ];then
     fi
 
     if [[ "$prop_value" == 1 ]];then
-        resetprop ro.audio.ignore_effects true
+        resetprop_phh ro.audio.ignore_effects true
     else
-        resetprop --delete ro.audio.ignore_effects
+        resetprop_phh --delete ro.audio.ignore_effects
     fi
     restartAudio
     exit
@@ -145,13 +145,27 @@ if [ "$1" == "persist.sys.phh.caf.audio_policy" ];then
         exit 1
     fi
 
+    sku="$(getprop ro.boot.product.vendor.sku)"
     if [[ "$prop_value" == 1 ]];then
         umount /vendor/etc/audio
         umount /vendor/etc/audio
-        mount /vendor/etc/audio/audio_policy_configuration.xml /vendor/etc/audio_policy_configuration.xml
+
+        if [ -f /vendor/etc/audio_policy_configuration_sec.xml ];then
+            mount /vendor/etc/audio_policy_configuration_sec.xml /vendor/etc/audio_policy_configuration.xml
+        elif [ -f /vendor/etc/audio/sku_${sku}_qssi/audio_policy_configuration.xml ] && [ -f /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml ];then
+            umount /vendor/etc/audio
+            mount /vendor/etc/audio/sku_${sku}_qssi/audio_policy_configuration.xml /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml
+        elif [ -f /vendor/etc/audio/audio_policy_configuration.xml ];then
+            mount /vendor/etc/audio/audio_policy_configuration.xml /vendor/etc/audio_policy_configuration.xml
+        elif [ -f /vendor/etc/audio_policy_configuration_base.xml ];then
+            mount /vendor/etc/audio_policy_configuration_base.xml /vendor/etc/audio_policy_configuration.xml
+        fi
     else
         umount /vendor/etc/audio_policy_configuration.xml
-        mount /mnt/phh/empty_dir /vendor/etc/audio
+        umount /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml
+        if [ $(find /vendor/etc/audio -type f |wc -l) -le 3 ];then
+            mount /mnt/phh/empty_dir /vendor/etc/audio
+        fi
     fi
     restartAudio
     exit

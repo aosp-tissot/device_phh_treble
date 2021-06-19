@@ -6,6 +6,7 @@ PRODUCT_COPY_FILES := \
 	frameworks/native/data/etc/android.hardware.telephony.ims.xml:system/etc/permissions/android.hardware.telephony.ims.xml \
 	frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
 	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
 
 #Use a more decent APN config
 PRODUCT_COPY_FILES += \
@@ -69,7 +70,8 @@ PRODUCT_COPY_FILES += \
 
 #USB Audio
 PRODUCT_COPY_FILES += \
-	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml
+	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml \
+	device/phh/treble/files/fake_audio_policy_volume.xml:system/etc/fake_audio_policy_volume.xml \
 
 # NFC:
 #   Provide default libnfc-nci.conf file for devices that does not have one in
@@ -154,8 +156,13 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/files/daisy-uinput-fpc.kl:system/phh/daisy-uinput-fpc.kl \
 	device/phh/treble/files/daisy-uinput-goodix.kl:system/phh/daisy-uinput-goodix.kl \
 	device/phh/treble/files/nubia-nubia_synaptics_dsx.kl:system/phh/nubia-nubia_synaptics_dsx.kl \
+	device/phh/treble/files/unihertz-mtk-kpd.kl:system/phh/unihertz-mtk-kpd.kl \
+	device/phh/treble/files/unihertz-mtk-tpd.kl:system/phh/unihertz-mtk-tpd.kl \
+	device/phh/treble/files/unihertz-mtk-tpd-kpd.kl:system/phh/unihertz-mtk-tpd-kpd.kl \
+	device/phh/treble/files/unihertz-fingerprint_key.kl:system/phh/unihertz-fingerprint_key.kl \
 	device/phh/treble/files/zf6-goodixfp.kl:system/phh/zf6-goodixfp.kl \
 	device/phh/treble/files/zf6-googlekey_input.kl:system/phh/zf6-googlekey_input.kl \
+	device/phh/treble/files/teracube2e-mtk-kpd.kl:system/phh/teracube2e-mtk-kpd.kl \
 
 SELINUX_IGNORE_NEVERALLOWS := true
 
@@ -183,7 +190,8 @@ PRODUCT_PACKAGES += \
 	Stk
 
 PRODUCT_PACKAGES += \
-	resetprop
+	resetprop_phh
+
 PRODUCT_COPY_FILES += \
 	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
 	device/phh/treble/files/ota.sh:system/bin/ota.sh \
@@ -220,4 +228,8 @@ PRODUCT_PACKAGES += \
 	healthd \
 
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-	debug.fdsan=0 \
+	debug.fdsan=warn_once \
+
+# AOSP overlays
+PRODUCT_PACKAGES += \
+    NavigationBarMode2ButtonOverlay
