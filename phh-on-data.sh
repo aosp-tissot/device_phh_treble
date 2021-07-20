@@ -40,6 +40,7 @@ fi
 # Add persist props for Redmi Note 9S/Pro/Max
 if getprop ro.vendor.build.fingerprint |grep -iq  -e redmi/curtana \
     -e redmi/joyeuse -e redmi/excalibur;then
+    persist.sys.phh.disable_audio_effects 1
     setprop persist.sys.phh.disable_a2dp_offload true
     setprop persist.bluetooth.bluetooth_audio_hal.disabled true
     setprop persist.sys.phh.caf.audio_policy 1
