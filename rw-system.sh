@@ -735,28 +735,28 @@ dmesg -n 1
     copyprop ro.product.manufacturer ro.vendor.product.manufacturer
     copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
     copyprop ro.product.manufacturer ro.product.vendor.manufacturer
-    resetprop ro.build.tags release-keys
-    resetprop ro.boot.vbmeta.device_state locked
-    resetprop ro.boot.verifiedbootstate green
-    resetprop ro.boot.flash.locked 1
-    resetprop ro.boot.veritymode enforcing
-    resetprop ro.boot.warranty_bit 0
-    resetprop ro.warranty_bit 0
-    resetprop ro.debuggable 0
-    resetprop ro.secure 1
-    resetprop ro.build.type user
-    resetprop ro.build.selinux 0
+    resetprop_phh ro.build.tags release-keys
+    resetprop_phh ro.boot.vbmeta.device_state locked
+    resetprop_phh ro.boot.verifiedbootstate green
+    resetprop_phh ro.boot.flash.locked 1
+    resetprop_phh ro.boot.veritymode enforcing
+    resetprop_phh ro.boot.warranty_bit 0
+    resetprop_phh ro.warranty_bit 0
+    resetprop_phh ro.debuggable 0
+    resetprop_phh ro.secure 1
+    resetprop_phh ro.build.type user
+    resetprop_phh ro.build.selinux 0
     // Fix the google hotword detection for android 11 on redmi note 9s
     if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana;then
-       resetprop ro.product.model "Note 9S"
+       resetprop_phh ro.product.model "Note 9S"
     fi
     if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/joyeuse;then
-       resetprop ro.product.model "Note 9S Pro"
+       resetprop_phh ro.product.model "Note 9S Pro"
     fi
     if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/excalibur;then
-       resetprop ro.product.model "Note 9S Pro Max"
+       resetprop_phh ro.product.model "Note 9S Pro Max"
     fi
-    resetprop ro.adb.secure 1
+    resetprop_phh ro.adb.secure 1
     setprop ctl.restart adbd
 
 for abi in "" 64;do
