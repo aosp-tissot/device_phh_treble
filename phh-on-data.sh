@@ -29,3 +29,21 @@ if [ "$vndk" = 28 ];then
     mount $minijailSrc64 /vendor/lib64/libminijail.so
     mount $minijailSrc /vendor/lib/libminijail.so
 fi
+
+# Enable IMS on qcom devices
+if getprop ro.boot.hardware|grep -q -e qcom;then
+    if getprop ro.product.cpu.abi | grep -q -e 'arm64-v8a'; then
+        resetprop_phh persist.dbg.allow_ims_off 1
+        resetprop_phh persist.dbg.volte_avail_ovr 1
+        resetprop_phh persist.dbg.vt_avail_ovr 1
+        resetprop_phh persist.dbg.wfc_avail_ovr 1
+        resetprop_phh persist.sys.phh.ims.caf true
+     fi
+     if getprop ro.product.cpu.abi | grep -q -e 'armeabi-v7a'; then
+        resetprop_phh persist.dbg.allow_ims_off 1
+        resetprop_phh persist.dbg.volte_avail_ovr 1
+        resetprop_phh persist.dbg.vt_avail_ovr 1
+        resetprop_phh persist.dbg.wfc_avail_ovr 1
+        resetprop_phh persist.sys.phh.ims.caf true
+     fi
+fi
