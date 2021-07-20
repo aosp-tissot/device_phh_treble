@@ -92,6 +92,16 @@ if [ ! -f /mnt/phh/ims ];then
    mount -o remount,ro /system
 fi
 
+# Redmi Note 9S/Pro/Max props
+if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur;then
+    setprop ro.netflix.bsp_rev Q6250-19132-1
+    setprop ro.surface_flinger.has_HDR_display true
+    setprop ro.surface_flinger.has_wide_color_display true
+    setprop persist.device_config.runtime_native.usap_pool_enabled true
+    setprop debug.sf.latch_unsignaled 1
+    setprop debug.sf.enable_gl_backpressure 1
+fi
+
 fixSPL() {
     if [ "$(getprop ro.product.cpu.abi)" = "armeabi-v7a" ]; then
         setprop ro.keymaster.mod 'AOSP on ARM32'
