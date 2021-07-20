@@ -752,6 +752,17 @@ resetprop_phh ro.build.selinux 0
 resetprop_phh ro.adb.secure 1
 setprop ctl.restart adbd
 
+// Fix the google hotword detection for android 11 on redmi note 9s
+if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana;then
+     resetprop_phh ro.product.model "Note 9S"
+fi
+if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/joyeuse;then
+     resetprop_phh ro.product.model "Note 9S Pro"
+fi
+if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/excalibur;then
+     resetprop_phh ro.product.model "Note 9S Pro Max"
+fi
+
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
     if [ -f "$f" ];then
