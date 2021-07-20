@@ -673,58 +673,56 @@ fi
 
 setprop ctl.stop console
 dmesg -n 1
-if [ -f /system/phh/secure ];then
-    copyprop() {
-        p="$(getprop "$2")"
-        if [ "$p" ]; then
-            resetprop_phh "$1" "$(getprop "$2")"
-        fi
-    }
+copyprop() {
+    p="$(getprop "$2")"
+    if [ "$p" ]; then
+        resetprop_phh "$1" "$(getprop "$2")"
+    fi
+}
 
-    copyprop ro.build.device ro.vendor.build.device
-    copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
-    copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
-    copyprop ro.build.fingerprint ro.vendor.build.fingerprint
-    copyprop ro.build.device ro.vendor.product.device
-    copyprop ro.product.system.device ro.vendor.product.device
-    copyprop ro.product.device ro.vendor.product.device
-    copyprop ro.product.system.device ro.product.vendor.device
-    copyprop ro.product.device ro.product.vendor.device
-    copyprop ro.product.system.name ro.vendor.product.name
-    copyprop ro.product.name ro.vendor.product.name
-    copyprop ro.product.system.name ro.product.vendor.device
-    copyprop ro.product.name ro.product.vendor.device
-    copyprop ro.system.product.brand ro.vendor.product.brand
-    copyprop ro.product.brand ro.vendor.product.brand
-    copyprop ro.product.system.model ro.vendor.product.model
-    copyprop ro.product.model ro.vendor.product.model
-    copyprop ro.product.system.model ro.product.vendor.model
-    copyprop ro.product.model ro.product.vendor.model
-    copyprop ro.build.product ro.vendor.product.model
-    copyprop ro.build.product ro.product.vendor.model
-    copyprop ro.system.product.manufacturer ro.vendor.product.manufacturer
-    copyprop ro.product.manufacturer ro.vendor.product.manufacturer
-    copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
-    copyprop ro.product.manufacturer ro.product.vendor.manufacturer
-    (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
-        [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
-    done
+copyprop ro.build.device ro.vendor.build.device
+copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
+copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
+copyprop ro.build.fingerprint ro.vendor.build.fingerprint
+copyprop ro.build.device ro.vendor.product.device
+copyprop ro.product.system.device ro.vendor.product.device
+copyprop ro.product.device ro.vendor.product.device
+copyprop ro.product.system.device ro.product.vendor.device
+copyprop ro.product.device ro.product.vendor.device
+copyprop ro.product.system.name ro.vendor.product.name
+copyprop ro.product.name ro.vendor.product.name
+copyprop ro.product.system.name ro.product.vendor.device
+copyprop ro.product.name ro.product.vendor.device
+copyprop ro.system.product.brand ro.vendor.product.brand
+copyprop ro.product.brand ro.vendor.product.brand
+copyprop ro.product.system.model ro.vendor.product.model
+copyprop ro.product.model ro.vendor.product.model
+copyprop ro.product.system.model ro.product.vendor.model
+copyprop ro.product.model ro.product.vendor.model
+copyprop ro.build.product ro.vendor.product.model
+copyprop ro.build.product ro.product.vendor.model
+copyprop ro.system.product.manufacturer ro.vendor.product.manufacturer
+copyprop ro.product.manufacturer ro.vendor.product.manufacturer
+copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
+copyprop ro.product.manufacturer ro.product.vendor.manufacturer
+(getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
+    [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
+done
 
-    resetprop_phh ro.build.tags release-keys
-    resetprop_phh ro.boot.vbmeta.device_state locked
-    resetprop_phh ro.boot.verifiedbootstate green
-    resetprop_phh ro.boot.flash.locked 1
-    resetprop_phh ro.boot.veritymode enforcing
-    resetprop_phh ro.boot.warranty_bit 0
-    resetprop_phh ro.warranty_bit 0
-    resetprop_phh ro.debuggable 0
-    resetprop_phh ro.secure 1
-    resetprop_phh ro.build.type user
-    resetprop_phh ro.build.selinux 0
+resetprop_phh ro.build.tags release-keys
+resetprop_phh ro.boot.vbmeta.device_state locked
+resetprop_phh ro.boot.verifiedbootstate green
+resetprop_phh ro.boot.flash.locked 1
+resetprop_phh ro.boot.veritymode enforcing
+resetprop_phh ro.boot.warranty_bit 0
+resetprop_phh ro.warranty_bit 0
+resetprop_phh ro.debuggable 0
+resetprop_phh ro.secure 1
+resetprop_phh ro.build.type user
+resetprop_phh ro.build.selinux 0
 
-    resetprop_phh ro.adb.secure 1
-    setprop ctl.restart adbd
-fi
+resetprop_phh ro.adb.secure 1
+setprop ctl.restart adbd
 
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
