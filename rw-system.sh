@@ -100,6 +100,7 @@ if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeu
     setprop persist.device_config.runtime_native.usap_pool_enabled true
     setprop debug.sf.latch_unsignaled 1
     setprop debug.sf.enable_gl_backpressure 1
+    mount -o bind /system/etc/mixer_paths_wcd937x.xml /vendor/etc/mixer_paths_wcd937x.xml
 fi
 
 fixSPL() {
@@ -622,6 +623,11 @@ if ! grep android.hardware.ir /vendor/manifest.xml;then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.consumerir.xml
 fi
 
+# Audio jack fix for mtk devices
+if getprop ro.vendor.build.fingerprint | grep -iq -E -e '^UMIDIGI/A7_Pro' -e '^DOOGEE/Y8'; then
+   setprop persist.sys.overlay.devinputjack true
+fi
+
 for f in /vendor/lib{,64}/hw/com.qti.chi.override.so /vendor/lib{,64}/libVD*;do
     [ ! -f $f ] && continue
     # shellcheck disable=SC2010
@@ -926,7 +932,7 @@ fi
 resetprop_phh ro.bluetooth.library_name libbluetooth.so
 
 if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
-    setprop ro.netflix.bsp_rev Q855-16947-1
+    setprop ro.netflix.bsp_rev Q855-16947-1	    setprop ro.netflix.bsp_rev Q855-16947-1
 fi
 
 if getprop ro.vendor.build.fingerprint |grep -qi redmi/curtana;then

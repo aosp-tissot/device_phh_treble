@@ -75,6 +75,11 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/empty:system/phh/empty \
 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
 
+# Copy file for curtana volume fixes
+PRODUCT_COPY_FILES += \
+	device/phh/treble/mixer_paths_wcd937x.xml:system/etc/mixer_paths_wcd937x.xml \
+	device/phh/treble/media_profiles_vendor.xml:system/etc/media_profiles_vendor.xml
+
 PRODUCT_PACKAGES += \
 	treble-environ-rc \
 
