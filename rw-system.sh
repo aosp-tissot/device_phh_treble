@@ -618,6 +618,10 @@ if [ $(find /vendor/etc/audio -type f |wc -l) -le 3 ];then
 	mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
 fi
 
+if ! grep android.hardware.ir /vendor/manifest.xml;then
+    mount -o bind system/phh/empty /system/etc/permissions/android.hardware.consumerir.xml
+fi
+
 for f in /vendor/lib{,64}/hw/com.qti.chi.override.so /vendor/lib{,64}/libVD*;do
     [ ! -f $f ] && continue
     # shellcheck disable=SC2010
